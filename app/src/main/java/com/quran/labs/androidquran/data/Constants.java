@@ -1,6 +1,6 @@
 package com.quran.labs.androidquran.data;
 
-public class Constants {
+public class Constants extends QuranConstants {
 
   // data domain
   public static final String HOST = "http://android.quran.com/";
@@ -19,10 +19,7 @@ public class Constants {
   public static final int PAGES_FIRST = 1;
   public static final int PAGES_LAST = QuranConstants.NUMBER_OF_PAGES;
   public static final int PAGES_LAST_DUAL = PAGES_LAST / 2;
-  public static final int SURA_FIRST = 1;
-  public static final int SURA_LAST = 114;
-  public static final int SURAS_COUNT = 114;
-  public static final int JUZ2_COUNT = 30;
+  public static final int SURAS_COUNT = SURA_LAST - SURA_FIRST+1;
   public static final int AYA_MIN = 1;
   public static final int AYA_MAX = 286;
   public static final int NO_PAGE = -1;

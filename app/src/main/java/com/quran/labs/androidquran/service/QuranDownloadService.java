@@ -529,7 +529,7 @@ public class QuranDownloadService extends Service implements
     final File partialFile = new File(path, filename + PARTIAL_EXT);
     final File actualFile = new File(path, filename);
 
-    Timber.d("downloadUrl: trying to download - file %s",
+    Timber.d("downloadUrl: trying to download ('%s') - file %s", url,
         actualFile.exists() ? "exists" : "doesn't exist");
     long downloadedAmount = 0;
     if (partialFile.exists()) {
