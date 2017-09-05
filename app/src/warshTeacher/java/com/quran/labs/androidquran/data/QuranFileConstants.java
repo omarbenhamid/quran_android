@@ -19,7 +19,7 @@ public class QuranFileConstants {
   public static final String QURAN_BASE = "quran_android/";
   public static final String DATABASE_DIRECTORY = "databases";
   public static final String AUDIO_DIRECTORY = "audio";
-  public static final String AYAHINFO_DIRECTORY = "naskh/" + DATABASE_DIRECTORY;
+  public static final String AYAHINFO_DIRECTORY = DATABASE_DIRECTORY;
   public static final String IMAGES_DIRECTORY = "naskh";
 
   // arabic database
