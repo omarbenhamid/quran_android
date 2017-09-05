@@ -7,11 +7,13 @@ public class QuranData {
   public static int[][] QUARTERS = BaseQuranData.QUARTERS;
 
   public static int[] SURA_PAGE_START = {
-      2 //Surah 0 = Aj Hujurat
+      -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,//20
+      -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,2 //49
+      ,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 //Surah 0 = Aj Hujurat
   };
 
   public static int[] PAGE_SURA_START = {
-      1, 1, 1, 1
+      49, 49, 49, 49
   };
 
   public static int[] PAGE_AYAH_START = {

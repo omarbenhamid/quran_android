@@ -27,6 +27,8 @@ import io.reactivex.observers.DisposableSingleObserver;
 import static com.quran.labs.androidquran.data.Constants.JUZ2_COUNT;
 import static com.quran.labs.androidquran.data.Constants.PAGES_LAST;
 import static com.quran.labs.androidquran.data.Constants.SURAS_COUNT;
+import static com.quran.labs.androidquran.data.QuranConstants.SURA_FIRST;
+import static com.quran.labs.androidquran.data.QuranConstants.SURA_LAST;
 
 public class SuraListFragment extends Fragment {
 
@@ -101,7 +103,7 @@ public class SuraListFragment extends Fragment {
   private QuranRow[] getSuraList() {
     int next;
     int pos = 0;
-    int sura = 1;
+    int sura = SURA_FIRST;
     QuranRow[] elements = new QuranRow[SURAS_COUNT + JUZ2_COUNT];
 
     Activity activity = getActivity();
@@ -118,7 +120,7 @@ public class SuraListFragment extends Fragment {
       next = (juz == JUZ2_COUNT) ? PAGES_LAST + 1 :
           QuranInfo.JUZ_PAGE_START[juz];
 
-      while ((sura <= SURAS_COUNT) &&
+      while ((sura <= SURA_LAST) &&
           (QuranInfo.SURA_PAGE_START[sura - 1] < next)) {
         final QuranRow.Builder builder = new QuranRow.Builder()
             .withText(QuranInfo.getSuraName(activity, sura, wantPrefix, wantTranslation))

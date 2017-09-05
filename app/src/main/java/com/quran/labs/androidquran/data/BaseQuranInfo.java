@@ -234,7 +234,7 @@ public class BaseQuranInfo {
   public static int getPageFromSuraAyah(int sura, int ayah) {
     // basic bounds checking
     if (ayah == 0) ayah = 1;
-    if ((sura < 1) || (sura > Constants.SURAS_COUNT)
+    if ((sura < Constants.SURA_FIRST) || (sura > Constants.SURA_LAST)
         || (ayah < Constants.AYA_MIN) ||
         (ayah > Constants.AYA_MAX))
       return -1;
