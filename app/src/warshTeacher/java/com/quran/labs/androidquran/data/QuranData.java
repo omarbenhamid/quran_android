@@ -8,7 +8,7 @@ public class QuranData {
 
   public static int[] SURA_PAGE_START = {
       -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,//20
-      -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,2 //49
+      -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1 //49
       ,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 //Surah 0 = Aj Hujurat
   };
 
@@ -22,7 +22,7 @@ public class QuranData {
 
 
   public static int[] JUZ_PAGE_START = {
-      2
+      1
   };
 
   public static int[] PAGE_RUB3_START = {
