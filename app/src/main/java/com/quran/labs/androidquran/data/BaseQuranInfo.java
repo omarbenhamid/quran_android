@@ -269,7 +269,7 @@ public class BaseQuranInfo {
   }
 
   public static int getNumAyahs(int sura) {
-    if ((sura < 1) || (sura > Constants.SURAS_COUNT)) return -1;
+    if ((sura < Constants.SURA_FIRST) || (sura > Constants.SURA_LAST)) return -1;
     return SURA_NUM_AYAHS[sura - 1];
   }
 
