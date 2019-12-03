@@ -13,15 +13,21 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.SparseArray;
+import android.view.MotionEvent;
+import android.widget.Toast;
 
 import com.quran.labs.androidquran.R;
 import com.quran.labs.androidquran.data.Constants;
+import com.quran.labs.androidquran.database.tahfiz.TahfizDatabase;
+import com.quran.labs.androidquran.database.tahfiz.dao.ReviewRangeDAO;
 import com.quran.labs.androidquran.ui.helpers.HighlightType;
 import com.quran.page.common.data.AyahBounds;
 import com.quran.page.common.data.AyahCoordinates;
 import com.quran.page.common.data.PageCoordinates;
 import com.quran.page.common.draw.ImageDrawHelper;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +69,8 @@ public class HighlightingImageView extends AppCompatImageView {
   private AyahCoordinates ayahCoordinates;
   private Set<ImageDrawHelper> imageDrawHelpers;
 
+  private Paint reviewUnderlinePaint;
+
   public HighlightingImageView(Context context) {
     this(context, null);
   }
@@ -78,6 +86,15 @@ public class HighlightingImageView extends AppCompatImageView {
       scrollableHeaderFooterFontSize =
           res.getDimensionPixelSize(R.dimen.page_overlay_font_size_scrollable);
     }
+    //Initialize style of review underline
+    reviewUnderlinePaint = new Paint();
+    reviewUnderlinePaint.setAntiAlias(true);
+    reviewUnderlinePaint.setDither(true);
+    reviewUnderlinePaint.setColor(Color.GREEN);
+    reviewUnderlinePaint.setStyle(Paint.Style.STROKE);
+    reviewUnderlinePaint.setStrokeCap(Paint.Cap.SQUARE);
+    reviewUnderlinePaint.setStrokeWidth(10);
+
   }
 
   public void setIsScrollable(boolean scrollable) {
@@ -285,6 +302,73 @@ public class HighlightingImageView extends AppCompatImageView {
     }
   }
 
+
+
+  private float ayahLen(List<AyahBounds> ayahBounds) {
+    float len = 0;
+
+    for(AyahBounds b : ayahBounds) {
+      RectF r = b.getBounds();
+      len = len + r.right - r.left;
+    }
+
+    return len;
+  }
+  /**
+   *
+   * @param canvas
+   * @param matrix
+   * @param ayahBounds
+   * @param startPos from 0.0 to 1 start posiiton
+   * @param endPos from 0.0 to 1 end position : must be > tahn start pos
+   */
+  private void paintUnderAyah(Canvas canvas, Matrix matrix, List<AyahBounds> ayahBounds, float startPos, float endPos) {
+    if (ayahBounds == null || ayahBounds.isEmpty()) return;
+
+    //FIXME: is it necessary ?
+    //AyahBounds already sorted : see AyahInfoDAtabaseHandler
+    // The method com.quran.labs.androidquran.data.AyahInfoDatabaseHandler.getVersesBoundsForPage
+    // return good bounds but com.quran.labs.androidquran.model.quran.CoordinatesModel.getAyahCoordinates
+    // calls normalizePageAyahs which merges them in an "optimal way" : they become unusable.
+    // POC seems oc but maybe build a different approach by querying directly the database handel
+    //
+    // Need to call getVersesBoundsForPage directly on
+    //    com.quran.labs.androidquran.data.AyahInfoDatabaseProvider.getAyahInfoHandler
+    //    or even redo a query like the one in getVersesBoundsCursorForPage with oly a given position
+    // range.
+    // Porbably enrich coordinates Model with the necesasry methods for what I want.
+
+    float len = ayahLen(ayahBounds);
+    float spos = len * startPos;
+    float epos = len * endPos;
+    boolean started = false;
+    boolean finished = false;
+
+    for (AyahBounds b : ayahBounds) {
+      RectF r = b.getBounds();
+      spos = spos - (r.right - r.left);
+      epos = epos - (r.right - r.left);
+
+      if(!started) {
+        if(spos >= 0) continue;
+
+        started = true;
+        r.right = r.left - spos;
+
+      }
+
+      if(epos <= 0) {
+        r.left = r.left - epos;
+      }
+
+      matrix.mapRect(scaledRect, r);
+      scaledRect.offset(0, getPaddingTop());
+      canvas.drawLine(scaledRect.left,scaledRect.bottom, scaledRect.right,
+          scaledRect.bottom, reviewUnderlinePaint);
+      if(epos <=0 ) break;
+    }
+  }
+
   @Override
   protected void onDraw(@NonNull Canvas canvas) {
     super.onDraw(canvas);
@@ -325,6 +409,10 @@ public class HighlightingImageView extends AppCompatImageView {
       }
     }
 
+    //Draw the underline of reviews
+    if(ayahCoordinates != null) {
+      paintUnderAyah(canvas, matrix, ayahCoordinates.getAyahCoordinates().values().iterator().next(), 0.30f, 0.90f);
+    }
     // run additional image draw helpers if any
     if (imageDrawHelpers != null && pageCoordinates != null) {
       for (ImageDrawHelper imageDrawHelper : imageDrawHelpers) {
