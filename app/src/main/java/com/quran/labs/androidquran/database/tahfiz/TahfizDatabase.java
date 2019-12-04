@@ -9,12 +9,13 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {ReviewRange.class}, version=1)
+@Database(entities = {ReviewRange.class}, version=3)
 public abstract class TahfizDatabase extends RoomDatabase {
   public abstract ReviewRangeDAO reviewRangeDAO();
 
   public static TahfizDatabase getInstance(Context ctx) {
     return Room.databaseBuilder(ctx.getApplicationContext(),
-        TahfizDatabase.class, "tahfiz").build();
+        TahfizDatabase.class, "tahfiz")
+        .fallbackToDestructiveMigration().build();
   }
 }
