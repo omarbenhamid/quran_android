@@ -2,6 +2,7 @@ package com.quran.labs.androidquran.ui.fragment;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -32,6 +33,8 @@ import com.quran.labs.androidquran.util.QuranSettings;
 import com.quran.labs.androidquran.widgets.HighlightingImageView;
 import com.quran.labs.androidquran.widgets.QuranImagePageLayout;
 import com.quran.page.common.data.AyahCoordinates;
+import com.quran.page.common.data.FingerMotionRange;
+import com.quran.page.common.data.LineBottom;
 import com.quran.page.common.data.PageCoordinates;
 import com.quran.page.common.draw.ImageDrawHelper;
 
@@ -62,6 +65,7 @@ public class QuranPageFragment extends Fragment implements PageController,
   private HighlightingImageView imageView;
   private QuranImagePageLayout quranPageLayout;
   private boolean ayahCoordinatesError;
+  private List<LineBottom> pageLineBottoms;
 
   public static QuranPageFragment newInstance(int page) {
     final QuranPageFragment f = new QuranPageFragment();
@@ -177,6 +181,7 @@ public class QuranPageFragment extends Fragment implements PageController,
   @Override
   public void setAyahCoordinatesData(AyahCoordinates ayahCoordinates) {
     ayahTrackerPresenter.setAyahCoordinates(ayahCoordinates);
+    pageLineBottoms = ayahCoordinates.getLineBottoms();
     ayahCoordinatesError = false;
   }
 
@@ -223,26 +228,44 @@ public class QuranPageFragment extends Fragment implements PageController,
         page, ayahSelectedListener, ayahCoordinatesError);
   }
 
+  private FingerMotionRange createMotionRange(float x0, float y0, float x1, float y1) {
+
+    //Transform to image coordinates
+
+    Matrix inv = new Matrix();
+    imageView.getImageMatrix().invert(inv);
+
+    float[] motionCoords = { x0, y0 - imageView.getPaddingTop(),
+        x1, y1 - imageView.getPaddingTop()};
+
+    inv.mapPoints(motionCoords);
+
+    return FingerMotionRange.fromMotionCoords(pageLineBottoms, motionCoords[0], motionCoords[1],
+        motionCoords[2], motionCoords[3]);
+  }
 
   @Override
   public void handleFingerMotionStart(float x0, float y0) {
-    imageView.updateTemporaryReviewRange(x0, y0, x0, y0);
+    if(pageLineBottoms == null) return; //Ignore touche events until ayah coordinates data is loaded
+    imageView.updateTemporaryReviewRange(null);
   }
 
   @Override
   public void handleFingerMotionUpdate(float x0, float y0, float x, float y) {
-    imageView.updateTemporaryReviewRange(x0 , y0, x , y );
+    if(pageLineBottoms == null) return; //Ignore touche events until ayah coordinates data is loaded
+    imageView.updateTemporaryReviewRange(createMotionRange(x0 , y0, x , y ));
   }
 
   @Override
   public void handleFingerMotionEnd(float x0, float y0, float x, float y) {
-    //TODO: transform using matrix x y;
-    /*
+    if(pageLineBottoms == null) return; //Ignore touche events until ayah coordinates data is loaded
+    /*TODO: implement saving to db
     reviewRangeModel.updateReviewRangeFromSwipe() => Convert this on one or may aya reliative underlines
         based on glyph position.
         onfinish(() imageView.setReviewRanges(loadReviewRangesFromDB)
             imageView.clearTemporaryReviewRange())
     */
+    imageView.updateTemporaryReviewRange(null);
   }
 
 }
