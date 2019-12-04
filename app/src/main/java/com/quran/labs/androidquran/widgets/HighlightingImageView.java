@@ -9,20 +9,21 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.FontMetrics;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.quran.labs.androidquran.R;
 import com.quran.labs.androidquran.data.Constants;
-import com.quran.labs.androidquran.database.tahfiz.TahfizDatabase;
-import com.quran.labs.androidquran.database.tahfiz.dao.ReviewRangeDAO;
 import com.quran.labs.androidquran.ui.helpers.HighlightType;
 import com.quran.page.common.data.AyahBounds;
 import com.quran.page.common.data.AyahCoordinates;
+import com.quran.page.common.data.LineBottom;
 import com.quran.page.common.data.PageCoordinates;
 import com.quran.page.common.draw.ImageDrawHelper;
 
@@ -70,6 +71,9 @@ public class HighlightingImageView extends AppCompatImageView {
   private Set<ImageDrawHelper> imageDrawHelpers;
 
   private Paint reviewUnderlinePaint;
+  private Paint reviewClearlinePaint;
+  private PointF tmpReviewRangeStart = new PointF();
+  private PointF tmpReviewRangeEnd = new PointF();
 
   public HighlightingImageView(Context context) {
     this(context, null);
@@ -94,6 +98,9 @@ public class HighlightingImageView extends AppCompatImageView {
     reviewUnderlinePaint.setStyle(Paint.Style.STROKE);
     reviewUnderlinePaint.setStrokeCap(Paint.Cap.SQUARE);
     reviewUnderlinePaint.setStrokeWidth(10);
+
+    reviewClearlinePaint = new Paint(reviewUnderlinePaint);
+    reviewClearlinePaint.setColor(Color.RED);
 
   }
 
@@ -186,6 +193,12 @@ public class HighlightingImageView extends AppCompatImageView {
       isColorFilterOn = false;
     }
 
+    invalidate();
+  }
+
+  public void updateTemporaryReviewRange(float x0, float y0, float x, float y) {
+    tmpReviewRangeStart.set(x0, y0);
+    tmpReviewRangeEnd.set(x, y);
     invalidate();
   }
 
@@ -369,6 +382,72 @@ public class HighlightingImageView extends AppCompatImageView {
     }
   }
 
+
+  private LineBottom findLine(float y) {
+    LineBottom last = null;
+    for(LineBottom l : ayahCoordinates.getLineBottoms()) {
+      if(l == null) continue;
+      if(l.getBottom() >= y) return l;
+      last = l;
+    }
+    return last;
+  }
+
+  private void paintLine(Canvas canvas, Matrix matrix, Paint paint, float x0, float x1, float y) {
+    float[] coords = {x0, y, x1, y};
+    matrix.mapPoints(coords);
+
+    canvas.drawLine(coords[0],coords[1] + getPaddingTop(),
+        coords[2], coords[3] + getPaddingTop(), paint);
+
+  }
+
+  private void paintReviewRange(Canvas canvas, Matrix matrix) {
+    Matrix inv = new Matrix();
+    matrix.invert(inv);
+
+
+    float[] ayaCoord = { tmpReviewRangeStart.x, tmpReviewRangeStart.y - getPaddingTop(),
+            tmpReviewRangeEnd.x, tmpReviewRangeEnd.y - getPaddingTop()};
+
+    inv.mapPoints(ayaCoord);
+    LineBottom startLine = findLine(ayaCoord[1]);
+    LineBottom endLine = findLine(ayaCoord[3]) ;
+
+    // Deleting if endline above start line or end is at the right of start on the same line
+    boolean deleting = (endLine.getLine() < startLine.getLine()) ||
+        (endLine.getLine() == startLine.getLine() && tmpReviewRangeStart.x < tmpReviewRangeEnd.x);
+
+    Paint paint;
+    LineBottom first, last;
+    float firstX, lastX;
+    if(deleting) {
+      paint = reviewClearlinePaint;
+      first = endLine;
+      last = startLine;
+      firstX = ayaCoord[2];
+      lastX = ayaCoord[0];
+    } else {
+      paint = reviewUnderlinePaint;
+      first = startLine;
+      last = endLine;
+      firstX = ayaCoord[0];
+      lastX = ayaCoord[2];
+    }
+
+    if(startLine == endLine) {
+      paintLine(canvas, matrix, paint, firstX, lastX, startLine.getBottom());
+    } else {
+      paintLine(canvas, matrix, paint, firstX, first.getLeft(), first.getBottom());
+      for(int line = first.getLine() + 1; line < last.getLine(); line ++) {
+        LineBottom l = ayahCoordinates.getLineBottoms().get(line - 1);
+        if(l == null) continue;
+        paintLine(canvas, matrix, paint, l.getLeft(), l.getRight(), l.getBottom());
+      }
+      paintLine(canvas, matrix, paint, lastX, last.getRight(), last.getBottom());
+    }
+  }
+
   @Override
   protected void onDraw(@NonNull Canvas canvas) {
     super.onDraw(canvas);
@@ -412,6 +491,7 @@ public class HighlightingImageView extends AppCompatImageView {
     //Draw the underline of reviews
     if(ayahCoordinates != null) {
       paintUnderAyah(canvas, matrix, ayahCoordinates.getAyahCoordinates().values().iterator().next(), 0.30f, 0.90f);
+      if(!tmpReviewRangeStart.equals(tmpReviewRangeEnd)) paintReviewRange(canvas, matrix);
     }
     // run additional image draw helpers if any
     if (imageDrawHelpers != null && pageCoordinates != null) {
@@ -420,4 +500,5 @@ public class HighlightingImageView extends AppCompatImageView {
       }
     }
   }
+
 }

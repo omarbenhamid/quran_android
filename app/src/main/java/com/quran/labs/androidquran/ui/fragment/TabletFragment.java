@@ -356,4 +356,19 @@ public class TabletFragment extends Fragment
   public void onScrollChanged(int x, int y, int oldx, int oldy) {
     // no-op - no image ScrollView in this mode.
   }
+
+  @Override
+  public void handleFingerMotionStart(float x, float y) {
+    // no-op - finger motion not supported in this mode
+  }
+
+  @Override
+  public void handleFingerMotionUpdate(float x0, float y0, float x, float y) {
+    // no-op - finger motion not supported in this mode
+  }
+
+  @Override
+  public void handleFingerMotionEnd(float x0, float y0, float x, float y) {
+    // no-op - finger motion not supported in this mode
+  }
 }

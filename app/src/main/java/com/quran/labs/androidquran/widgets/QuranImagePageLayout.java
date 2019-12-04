@@ -102,7 +102,6 @@ public class QuranImagePageLayout extends QuranPageLayout {
 
       switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
-          Log.d("QPL","Down " +x +","+ y);
           x0 = x;
           y0 = y;
           moving = false;
@@ -117,17 +116,19 @@ public class QuranImagePageLayout extends QuranPageLayout {
             int dstSq = dx * dx + dy * dy;
             if(dstSq <= touchSlopSquare) break;
             moving = true;
+            pageController.handleFingerMotionStart(x0, y0);
           }
           //Here we are moving
-          //pageController.handleFingerMotion(x0, y0, x, y);
-          Log.d("QPL","Moving to" + x +","+ y);
+          pageController.handleFingerMotionUpdate(x0, y0, x, y);
+          Log.d(
+              "QPL","Moving to" + x +","+ y);
 
           break;
         case MotionEvent.ACTION_UP:
           if(moving) {
             Log.d("QPL", "Up " + x + "," + y);
             //Here notify the pageController to do the precise position using glyphdb, and save it.
-            //pageController.handleFingerMotionFinish(x0, y0, x, y);
+            pageController.handleFingerMotionEnd(x0, y0, x, y);
           }
           break;
       }

@@ -222,4 +222,27 @@ public class QuranPageFragment extends Fragment implements PageController,
     return isVisible() && ayahTrackerPresenter.handleTouchEvent(getActivity(), event, eventType,
         page, ayahSelectedListener, ayahCoordinatesError);
   }
+
+
+  @Override
+  public void handleFingerMotionStart(float x0, float y0) {
+    imageView.updateTemporaryReviewRange(x0, y0, x0, y0);
+  }
+
+  @Override
+  public void handleFingerMotionUpdate(float x0, float y0, float x, float y) {
+    imageView.updateTemporaryReviewRange(x0 , y0, x , y );
+  }
+
+  @Override
+  public void handleFingerMotionEnd(float x0, float y0, float x, float y) {
+    //TODO: transform using matrix x y;
+    /*
+    reviewRangeModel.updateReviewRangeFromSwipe() => Convert this on one or may aya reliative underlines
+        based on glyph position.
+        onfinish(() imageView.setReviewRanges(loadReviewRangesFromDB)
+            imageView.clearTemporaryReviewRange())
+    */
+  }
+
 }

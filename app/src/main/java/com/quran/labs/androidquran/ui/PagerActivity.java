@@ -80,6 +80,7 @@ import com.quran.labs.androidquran.util.ShareUtil;
 import com.quran.labs.androidquran.widgets.AudioStatusBar;
 import com.quran.labs.androidquran.widgets.AyahToolBar;
 import com.quran.labs.androidquran.widgets.IconPageIndicator;
+import com.quran.labs.androidquran.widgets.NonSwipingViewPager;
 import com.quran.labs.androidquran.widgets.QuranSpinner;
 import com.quran.labs.androidquran.widgets.SlidingUpPanelLayout;
 
@@ -341,7 +342,7 @@ public class PagerActivity extends QuranActionBarActivity implements
         getSupportFragmentManager(), isDualPages, showingTranslation, quranInfo);
     ayahToolBar = findViewById(R.id.ayah_toolbar);
 
-    final NonRestoringViewPager nonRestoringViewPager = findViewById(R.id.quran_pager);
+    final NonSwipingViewPager nonRestoringViewPager = findViewById(R.id.quran_pager);
     nonRestoringViewPager.setIsDualPagesInLandscape(
         QuranUtils.isDualPagesInLandscape(this, quranScreenInfo));
 
@@ -518,8 +519,10 @@ public class PagerActivity extends QuranActionBarActivity implements
     slidingPanel = findViewById(R.id.sliding_panel);
     final ViewGroup slidingLayout =
         slidingPanel.findViewById(R.id.sliding_layout);
+
     slidingPager = slidingPanel
         .findViewById(R.id.sliding_layout_pager);
+
     final IconPageIndicator slidingPageIndicator =
         slidingPanel
             .findViewById(R.id.sliding_pager_indicator);

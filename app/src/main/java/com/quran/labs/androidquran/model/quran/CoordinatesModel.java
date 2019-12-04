@@ -66,7 +66,8 @@ public class CoordinatesModel {
         normalizedMap.put(key, normalizeAyahBounds(normalBounds));
       }
     }
-    return new AyahCoordinates(ayahCoordinates.getPage(), normalizedMap);
+    return new AyahCoordinates(ayahCoordinates.getPage(), normalizedMap,
+        ayahCoordinates.getLineBottoms());
   }
 
   private List<AyahBounds> normalizeAyahBounds(List<AyahBounds> ayahBounds) {
@@ -188,4 +189,5 @@ public class CoordinatesModel {
     result.add(bottom);
     return result;
   }
+
 }

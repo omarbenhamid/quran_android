@@ -12,6 +12,7 @@ import com.quran.labs.androidquran.util.QuranFileUtils;
 import com.quran.page.common.data.AyahBounds;
 import com.quran.page.common.data.AyahCoordinates;
 import com.quran.page.common.data.AyahMarkerLocation;
+import com.quran.page.common.data.LineBottom;
 import com.quran.page.common.data.PageCoordinates;
 import com.quran.page.common.data.SuraHeaderLocation;
 
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 public class AyahInfoDatabaseHandler {
   private static final RectF EMPTY_BOUNDS = new RectF();
@@ -129,6 +131,8 @@ public class AyahInfoDatabaseHandler {
   @NonNull
   public AyahCoordinates getVersesBoundsForPage(int page) {
     Map<String, List<AyahBounds>> ayahBounds = new HashMap<>();
+    Vector<LineBottom> lineBottoms = new Vector<>();
+
     Cursor cursor = null;
     try {
       cursor = getVersesBoundsCursorForPage(page);
@@ -150,6 +154,7 @@ public class AyahInfoDatabaseHandler {
             cursor.getInt(4), cursor.getInt(5),
             cursor.getInt(6), cursor.getInt(7),
             cursor.getInt(8));
+
         if (last != null && last.getLine() == bound.getLine()) {
           last.engulf(bound);
         } else {
@@ -157,11 +162,36 @@ public class AyahInfoDatabaseHandler {
         }
         ayahBounds.put(key, bounds);
       }
+
+      //Compute lineBottoms
+      for(List<AyahBounds> bounds : ayahBounds.values()) {
+        for(AyahBounds bound : bounds) {
+          //First update line bottom with raw data
+          int line = bound.getLine();
+          //TODO: ensure that line is 1 based index
+          assert (line > 0); //TODO: remove me when sure
+          LineBottom lb;
+          RectF abRect = bound.getBounds();
+          if (lineBottoms.size() < line) {
+            lineBottoms.setSize(line);
+          }
+          line = line - 1; //0 based index
+          lb = lineBottoms.get(line);
+          if (lb == null) {
+            lb = new LineBottom(line + 1, abRect.left, abRect.right, abRect.bottom);
+            lineBottoms.setElementAt(lb, line);
+          } else {
+            lb.setLeft(Math.min(lb.getLeft(), abRect.left));
+            lb.setRight(Math.max(lb.getRight(), abRect.right));
+            lb.setBottom(Math.max(lb.getBottom(), abRect.bottom));
+          }
+        }
+      }
     } finally {
       DatabaseUtils.closeCursor(cursor);
     }
 
-    return new AyahCoordinates(page, ayahBounds);
+    return new AyahCoordinates(page, ayahBounds, lineBottoms);
   }
 
   private boolean haveVerseMarkerData() {
