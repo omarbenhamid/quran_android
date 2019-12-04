@@ -241,7 +241,7 @@ public class QuranPageFragment extends Fragment implements PageController,
     inv.mapPoints(motionCoords);
 
     return FingerMotionRange.fromMotionCoords(pageLineBottoms, motionCoords[0], motionCoords[1],
-        motionCoords[2], motionCoords[3]);
+        motionCoords[2]);
   }
 
   @Override

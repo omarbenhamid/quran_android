@@ -5,8 +5,7 @@ import java.util.List;
 public class FingerMotionRange {
   boolean deleting;
 
-  int firstLine;
-  int lastLine;
+  int line;
 
   float firstX;
   float lastX;
@@ -28,24 +27,18 @@ public class FingerMotionRange {
    * @param startX
    * @param startY
    * @param endX
-   * @param endY
    */
-  public void set(List<LineBottom> lineBottoms, float startX, float startY, float endX, float endY) {
-    LineBottom startLine = findLine(lineBottoms,startY);
-    LineBottom endLine = findLine(lineBottoms,endY) ;
+  public void set(List<LineBottom> lineBottoms, float startX, float startY, float endX) {
+    LineBottom lineBottom = findLine(lineBottoms,startY);
 
     // Deleting if endline above start line or end is at the right of start on the same line
-    deleting = (endLine.getLine() < startLine.getLine()) ||
-        (endLine.getLine() == startLine.getLine() && startX < endX);
+    deleting = startX < endX;
+    line = lineBottom.getLine();
 
     if(deleting) {
-      firstLine = endLine.getLine();
-      lastLine = startLine.getLine();
       firstX = endX;
       lastX = startX;
     } else {
-      firstLine = startLine.getLine();
-      lastLine = endLine.getLine();
       firstX = startX;
       lastX = endX;
     }
@@ -54,9 +47,9 @@ public class FingerMotionRange {
 
   public static FingerMotionRange fromMotionCoords(List<LineBottom> lineBottoms,
                                                    float startX, float startY,
-                                                   float endX, float endY) {
+                                                   float endX) {
     FingerMotionRange ret = new FingerMotionRange();
-    ret.set(lineBottoms, startX, startY, endX, endY);
+    ret.set(lineBottoms, startX, startY, endX);
     return ret;
   }
 
@@ -64,12 +57,8 @@ public class FingerMotionRange {
     return deleting;
   }
 
-  public int getFirstLine() {
-    return firstLine;
-  }
-
-  public int getLastLine() {
-    return lastLine;
+  public int getLine() {
+    return line;
   }
 
   public float getFirstX() {

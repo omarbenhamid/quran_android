@@ -391,25 +391,10 @@ public class HighlightingImageView extends AppCompatImageView {
     if(tmpReviewRange == null) return; //No review range set
 
     Paint paint = tmpReviewRange.isDeleting() ? reviewClearlinePaint : reviewUnderlinePaint;
-    List<LineBottom> lineBottoms = ayahCoordinates.getLineBottoms();
-    if(tmpReviewRange.getFirstLine() == tmpReviewRange.getLastLine()) {
-      paintLine(canvas, matrix, paint, tmpReviewRange.getFirstX(), tmpReviewRange.getLastX(),
-          lineBottoms.get(tmpReviewRange.getFirstLine()-1).getBottom());
-    } else {
-      LineBottom l;
-      l = lineBottoms.get(tmpReviewRange.getFirstLine() - 1);
+    LineBottom l = ayahCoordinates.getLineBottoms().get(tmpReviewRange.getLine() - 1);
+    paintLine(canvas, matrix, paint, tmpReviewRange.getFirstX(), tmpReviewRange.getLastX(),
+        l.getBottom());
 
-      paintLine(canvas, matrix, paint, tmpReviewRange.getFirstX(),
-          l.getLeft(), l.getBottom());
-      for(int line = tmpReviewRange.getFirstLine() + 1; line < tmpReviewRange.getLastLine(); line ++) {
-        l = lineBottoms.get(line - 1);
-        if(l == null) continue;
-        paintLine(canvas, matrix, paint, l.getLeft(), l.getRight(), l.getBottom());
-      }
-      l = lineBottoms.get(tmpReviewRange.getLastLine() - 1);
-      paintLine(canvas, matrix, paint, tmpReviewRange.getLastX(), l.getRight(),
-          l.getBottom());
-    }
   }
 
   @Override
