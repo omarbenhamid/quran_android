@@ -24,7 +24,7 @@ public class ReviewRange {
   public float lastX;
 
   @ColumnInfo(name="count")
-  public float count = MAX_COUNT;
+  public float count = 1;
 
   public ReviewRange(int page, int line, float firstX, float lastX) {
     this.page = page;

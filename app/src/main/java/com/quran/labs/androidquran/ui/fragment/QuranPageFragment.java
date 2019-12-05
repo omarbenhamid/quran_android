@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import com.quran.labs.androidquran.dao.bookmark.Bookmark;
 import com.quran.labs.androidquran.data.QuranInfo;
-import com.quran.labs.androidquran.model.tahfiz.ReviewRangeModel;
+import com.quran.labs.androidquran.database.tahfiz.entities.ReviewRange;
 import com.quran.labs.androidquran.module.fragment.QuranPageModule;
 import com.quran.labs.androidquran.presenter.quran.QuranPagePresenter;
 import com.quran.labs.androidquran.presenter.quran.QuranPageScreen;
@@ -44,8 +44,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 import static com.quran.labs.androidquran.ui.helpers.AyahSelectedListener.EventType;
@@ -64,7 +62,6 @@ public class QuranPageFragment extends Fragment implements PageController,
   @Inject AyahSelectedListener ayahSelectedListener;
   @Inject QuranScreenInfo quranScreenInfo;
   @Inject Set<ImageDrawHelper> imageDrawHelpers;
-  @Inject ReviewRangeModel reviewRangeModel;
 
   private HighlightingImageView imageView;
   private QuranImagePageLayout quranPageLayout;
@@ -189,6 +186,10 @@ public class QuranPageFragment extends Fragment implements PageController,
     ayahCoordinatesError = false;
   }
 
+  public void setReviewRanges(List<ReviewRange> ranges) {
+    imageView.setReviewRanges(ranges);
+  }
+
   @Override
   public void setAyahCoordinatesError() {
     ayahCoordinatesError = true;
@@ -263,15 +264,7 @@ public class QuranPageFragment extends Fragment implements PageController,
   @Override
   public void handleFingerMotionEnd(float x0, float y0, float x, float y) {
     if(pageLineBottoms == null) return; //Ignore touche events until ayah coordinates data is loaded
-    Disposable d = reviewRangeModel.updateDatabaseWithFingerMothion(pageNumber,
-        createMotionRange(x0 , y0, x , y ))
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(() -> {
-          imageView.updateTemporaryReviewRange(null);
-          //TODO: requery ranges
-        });
-    //todo ût d in compsite
-
+    quranPagePresenter.updateReviewRanges(pageNumber, createMotionRange(x0 , y0, x , y ));
   }
 
 }

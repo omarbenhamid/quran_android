@@ -15,6 +15,7 @@ import com.quran.labs.androidquran.common.LocalTranslation;
 import com.quran.labs.androidquran.common.QuranAyahInfo;
 import com.quran.labs.androidquran.dao.bookmark.Bookmark;
 import com.quran.labs.androidquran.data.QuranInfo;
+import com.quran.labs.androidquran.database.tahfiz.entities.ReviewRange;
 import com.quran.labs.androidquran.module.fragment.QuranPageModule;
 import com.quran.labs.androidquran.presenter.quran.QuranPagePresenter;
 import com.quran.labs.androidquran.presenter.quran.QuranPageScreen;
@@ -370,5 +371,10 @@ public class TabletFragment extends Fragment
   @Override
   public void handleFingerMotionEnd(float x0, float y0, float x, float y) {
     // no-op - finger motion not supported in this mode
+  }
+
+  @Override
+  public void setReviewRanges(List<ReviewRange> ranges) {
+    // no-op
   }
 }

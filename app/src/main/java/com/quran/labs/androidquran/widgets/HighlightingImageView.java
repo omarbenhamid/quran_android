@@ -16,6 +16,7 @@ import android.util.SparseArray;
 
 import com.quran.labs.androidquran.R;
 import com.quran.labs.androidquran.data.Constants;
+import com.quran.labs.androidquran.database.tahfiz.entities.ReviewRange;
 import com.quran.labs.androidquran.ui.helpers.HighlightType;
 import com.quran.page.common.data.AyahBounds;
 import com.quran.page.common.data.AyahCoordinates;
@@ -67,7 +68,10 @@ public class HighlightingImageView extends AppCompatImageView {
 
   private Paint reviewUnderlinePaint;
   private Paint reviewClearlinePaint;
+  private Paint reviewRangePaint;
+
   private FingerMotionRange tmpReviewRange;
+  private List<ReviewRange> reviewRanges;
 
   public HighlightingImageView(Context context) {
     this(context, null);
@@ -95,6 +99,9 @@ public class HighlightingImageView extends AppCompatImageView {
 
     reviewClearlinePaint = new Paint(reviewUnderlinePaint);
     reviewClearlinePaint.setColor(Color.RED);
+
+    reviewRangePaint = new Paint(reviewUnderlinePaint);
+    reviewRangePaint.setColor(Color.BLUE);
 
   }
 
@@ -192,6 +199,12 @@ public class HighlightingImageView extends AppCompatImageView {
 
   public void updateTemporaryReviewRange(FingerMotionRange range) {
     tmpReviewRange = range;
+    invalidate();
+  }
+
+  public void setReviewRanges(List<ReviewRange> ranges) {
+    tmpReviewRange = null;
+    reviewRanges = ranges;
     invalidate();
   }
 
@@ -387,12 +400,19 @@ public class HighlightingImageView extends AppCompatImageView {
 
   }
 
-  private void paintReviewRange(Canvas canvas, Matrix matrix) {
+  private void paintTmpReviewRange(Canvas canvas, Matrix matrix) {
     if(tmpReviewRange == null) return; //No review range set
 
     Paint paint = tmpReviewRange.isDeleting() ? reviewClearlinePaint : reviewUnderlinePaint;
     LineBottom l = ayahCoordinates.getLineBottoms().get(tmpReviewRange.getLine() - 1);
     paintLine(canvas, matrix, paint, tmpReviewRange.getFirstX(), tmpReviewRange.getLastX(),
+        l.getBottom());
+
+  }
+
+  private void paintReviewRange(Canvas canvas, Matrix matrix, ReviewRange r) {
+    LineBottom l = ayahCoordinates.getLineBottoms().get(r.line - 1);
+    paintLine(canvas, matrix, reviewRangePaint, r.firstX, r.lastX,
         l.getBottom());
 
   }
@@ -440,7 +460,12 @@ public class HighlightingImageView extends AppCompatImageView {
     //Draw the underline of reviews
     if(ayahCoordinates != null) {
       paintUnderAyah(canvas, matrix, ayahCoordinates.getAyahCoordinates().values().iterator().next(), 0.30f, 0.90f);
-      if(tmpReviewRange != null) paintReviewRange(canvas, matrix);
+      if(reviewRanges != null) {
+        for(ReviewRange r : reviewRanges) {
+          paintReviewRange(canvas, matrix, r);
+        }
+      }
+      if(tmpReviewRange != null) paintTmpReviewRange(canvas, matrix);
     }
     // run additional image draw helpers if any
     if (imageDrawHelpers != null && pageCoordinates != null) {

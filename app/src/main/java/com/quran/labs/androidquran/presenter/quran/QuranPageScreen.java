@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.quran.labs.androidquran.dao.bookmark.Bookmark;
+import com.quran.labs.androidquran.database.tahfiz.entities.ReviewRange;
 import com.quran.page.common.data.AyahCoordinates;
 import com.quran.page.common.data.PageCoordinates;
 
@@ -18,4 +19,5 @@ public interface QuranPageScreen {
   void hidePageDownloadError();
   void setPageDownloadError(@StringRes int errorMessage);
   void setAyahCoordinatesData(AyahCoordinates coordinates);
+  void setReviewRanges(List<ReviewRange> ranges);
 }

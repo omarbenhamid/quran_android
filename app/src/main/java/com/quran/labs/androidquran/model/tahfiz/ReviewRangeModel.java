@@ -24,6 +24,9 @@ public class ReviewRangeModel {
     db = TahfizDatabase.getInstance(context);
   }
 
+  public TahfizDatabase getDatabase() {
+    return db;
+  }
 
   public Completable updateDatabaseWithFingerMothion(int pageNumber, FingerMotionRange range) {
     return Completable.fromRunnable( () -> {

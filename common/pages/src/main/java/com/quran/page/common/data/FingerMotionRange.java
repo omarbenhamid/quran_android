@@ -36,11 +36,11 @@ public class FingerMotionRange {
     line = lineBottom.getLine();
 
     if(deleting) {
-      firstX = endX;
-      lastX = startX;
-    } else {
       firstX = startX;
       lastX = endX;
+    } else {
+      firstX = endX;
+      lastX = startX;
     }
 
   }
