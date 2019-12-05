@@ -38,23 +38,21 @@ public class ReviewRangeModel {
         return;
       }
 
+      ReviewRange newRange = new ReviewRange(pageNumber, range.getLine(),
+          range.getFirstX(), range.getLastX());
       for(ReviewRange r : dao.findIntersecting(pageNumber, range.getLine(),
           range.getFirstX(), range.getLastX())) {
         if(r.contains(range.getFirstX(), range.getLastX())) {
           r.inc();
           dao.update(r);
-          continue;
+          return;
         }
 
-        if(r.containedIn(range.getFirstX(), range.getLastX())){
-          dao.deleteById(r.id);
-        }
-
-        r.cutWith(range.getFirstX(), range.getLastX());
-        dao.update(r);
+        newRange.engulf(r);
+        dao.deleteById(r.id);
       }
 
-      dao.addReviewRange(new ReviewRange(pageNumber, range.getLine(), range.getFirstX(), range.getLastX()));
+      dao.addReviewRange(newRange);
     }).subscribeOn(Schedulers.io());
   }
 }

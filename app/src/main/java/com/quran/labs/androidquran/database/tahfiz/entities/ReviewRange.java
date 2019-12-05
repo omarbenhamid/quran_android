@@ -45,10 +45,6 @@ public class ReviewRange {
     if(count < MAX_COUNT) count++;
   }
 
-  public boolean containedIn(float fx, float lx) {
-    return firstX >= fx && lastX <= lx;
-  }
-
   /**
    * not  contains nor containedin or behaviour iss "unexpected"
    * @param fx
@@ -57,5 +53,11 @@ public class ReviewRange {
   public void cutWith(float fx, float lx) {
     if(firstX <= fx) lastX = fx;
     if(lastX >= lx) firstX = lx;
+  }
+
+  public void engulf(ReviewRange r) {
+    if(firstX > r.firstX) firstX = r.firstX;
+    if(lastX < r.lastX) lastX= r.lastX;
+    if(count < r.count) count = r.count;
   }
 }

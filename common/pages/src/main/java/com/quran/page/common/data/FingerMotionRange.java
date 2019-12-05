@@ -14,7 +14,10 @@ public class FingerMotionRange {
     LineBottom last = null;
     for(LineBottom l : lineBottoms) {
       if(l == null) continue;
-      if(l.getBottom() >= y) return l;
+      if(last != null) {
+      if (y <= (last.getBottom() + l.getBottom()) / 2)
+          return last;
+      }
       last = l;
     }
     return last;

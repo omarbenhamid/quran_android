@@ -102,6 +102,9 @@ public class HighlightingImageView extends AppCompatImageView {
 
     reviewRangePaint = new Paint(reviewUnderlinePaint);
     reviewRangePaint.setColor(Color.BLUE);
+    reviewUnderlinePaint.setStrokeCap(Paint.Cap.ROUND);
+    reviewRangePaint.setStrokeWidth(4);
+    reviewRangePaint.setAlpha(64);
 
   }
 
@@ -321,82 +324,12 @@ public class HighlightingImageView extends AppCompatImageView {
     }
   }
 
-
-
-  private float ayahLen(List<AyahBounds> ayahBounds) {
-    float len = 0;
-
-    for(AyahBounds b : ayahBounds) {
-      RectF r = b.getBounds();
-      len = len + r.right - r.left;
-    }
-
-    return len;
-  }
-  /**
-   *
-   * @param canvas
-   * @param matrix
-   * @param ayahBounds
-   * @param startPos from 0.0 to 1 start posiiton
-   * @param endPos from 0.0 to 1 end position : must be > tahn start pos
-   */
-  private void paintUnderAyah(Canvas canvas, Matrix matrix, List<AyahBounds> ayahBounds, float startPos, float endPos) {
-    if (ayahBounds == null || ayahBounds.isEmpty()) return;
-
-    //FIXME: is it necessary ?
-    //AyahBounds already sorted : see AyahInfoDAtabaseHandler
-    // The method com.quran.labs.androidquran.data.AyahInfoDatabaseHandler.getVersesBoundsForPage
-    // return good bounds but com.quran.labs.androidquran.model.quran.CoordinatesModel.getAyahCoordinates
-    // calls normalizePageAyahs which merges them in an "optimal way" : they become unusable.
-    // POC seems oc but maybe build a different approach by querying directly the database handel
-    //
-    // Need to call getVersesBoundsForPage directly on
-    //    com.quran.labs.androidquran.data.AyahInfoDatabaseProvider.getAyahInfoHandler
-    //    or even redo a query like the one in getVersesBoundsCursorForPage with oly a given position
-    // range.
-    // Porbably enrich coordinates Model with the necesasry methods for what I want.
-
-    float len = ayahLen(ayahBounds);
-    float spos = len * startPos;
-    float epos = len * endPos;
-    boolean started = false;
-    boolean finished = false;
-
-    for (AyahBounds b : ayahBounds) {
-      RectF r = b.getBounds();
-      spos = spos - (r.right - r.left);
-      epos = epos - (r.right - r.left);
-
-      if(!started) {
-        if(spos >= 0) continue;
-
-        started = true;
-        r.right = r.left - spos;
-
-      }
-
-      if(epos <= 0) {
-        r.left = r.left - epos;
-      }
-
-      matrix.mapRect(scaledRect, r);
-      scaledRect.offset(0, getPaddingTop());
-      canvas.drawLine(scaledRect.left,scaledRect.bottom, scaledRect.right,
-          scaledRect.bottom, reviewUnderlinePaint);
-      if(epos <=0 ) break;
-    }
-  }
-
-
-
-
-  private void paintLine(Canvas canvas, Matrix matrix, Paint paint, float x0, float x1, float y) {
+  private void paintLine(Canvas canvas, Matrix matrix, Paint paint, float x0, float x1, float y, float absoluteDY) {
     float[] coords = {x0, y, x1, y};
     matrix.mapPoints(coords);
 
-    canvas.drawLine(coords[0],coords[1] + getPaddingTop(),
-        coords[2], coords[3] + getPaddingTop(), paint);
+    canvas.drawLine(coords[0],coords[1] + getPaddingTop() + absoluteDY,
+        coords[2], coords[3] + getPaddingTop() + absoluteDY, paint);
 
   }
 
@@ -406,15 +339,17 @@ public class HighlightingImageView extends AppCompatImageView {
     Paint paint = tmpReviewRange.isDeleting() ? reviewClearlinePaint : reviewUnderlinePaint;
     LineBottom l = ayahCoordinates.getLineBottoms().get(tmpReviewRange.getLine() - 1);
     paintLine(canvas, matrix, paint, tmpReviewRange.getFirstX(), tmpReviewRange.getLastX(),
-        l.getBottom());
+        l.getBottom(), 0);
 
   }
 
   private void paintReviewRange(Canvas canvas, Matrix matrix, ReviewRange r) {
     LineBottom l = ayahCoordinates.getLineBottoms().get(r.line - 1);
-    paintLine(canvas, matrix, reviewRangePaint, r.firstX, r.lastX,
-        l.getBottom());
-
+    float dY = - 6;
+    for(int i=0; i < r.count; i++) {
+      paintLine(canvas, matrix, reviewRangePaint, r.firstX, r.lastX, l.getBottom(), dY);
+      dY += 6;
+    }
   }
 
   @Override
@@ -459,7 +394,6 @@ public class HighlightingImageView extends AppCompatImageView {
 
     //Draw the underline of reviews
     if(ayahCoordinates != null) {
-      paintUnderAyah(canvas, matrix, ayahCoordinates.getAyahCoordinates().values().iterator().next(), 0.30f, 0.90f);
       if(reviewRanges != null) {
         for(ReviewRange r : reviewRanges) {
           paintReviewRange(canvas, matrix, r);
