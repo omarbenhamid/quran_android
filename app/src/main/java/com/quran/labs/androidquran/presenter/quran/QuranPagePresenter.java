@@ -3,7 +3,6 @@ package com.quran.labs.androidquran.presenter.quran;
 
 import android.graphics.Bitmap;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.quran.labs.androidquran.R;
 import com.quran.labs.androidquran.common.Response;
@@ -240,7 +239,7 @@ public class QuranPagePresenter implements Presenter<QuranPageScreen> {
 
   public void updateReviewRanges(int pageNumber, FingerMotionRange motionRange) {
     compositeDisposable.add(
-        reviewRangeModel.updateDatabaseWithFingerMothion(pageNumber, motionRange)
+        reviewRangeModel.updateDatabaseWithFingerMotion(pageNumber, motionRange)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(() -> {
           getReviewRanges(pages);

@@ -46,6 +46,8 @@ public class FingerMotionRange {
       lastX = startX;
     }
 
+    if(firstX < lineBottom.getLeft()) firstX = lineBottom.getLeft();
+    if(lastX > lineBottom.getRight()) lastX = lineBottom.getRight();
   }
 
   public static FingerMotionRange fromMotionCoords(List<LineBottom> lineBottoms,

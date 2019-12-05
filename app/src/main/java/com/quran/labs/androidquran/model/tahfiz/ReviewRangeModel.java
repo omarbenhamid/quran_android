@@ -28,7 +28,7 @@ public class ReviewRangeModel {
     return db;
   }
 
-  public Completable updateDatabaseWithFingerMothion(int pageNumber, FingerMotionRange range) {
+  public Completable updateDatabaseWithFingerMotion(int pageNumber, FingerMotionRange range) {
     return Completable.fromRunnable( () -> {
       ReviewRangeDAO dao = db.reviewRangeDAO();
       if(range.isDeleting()) {
@@ -40,6 +40,8 @@ public class ReviewRangeModel {
 
       ReviewRange newRange = new ReviewRange(pageNumber, range.getLine(),
           range.getFirstX(), range.getLastX());
+      newRange.count = 0;
+
       for(ReviewRange r : dao.findIntersecting(pageNumber, range.getLine(),
           range.getFirstX(), range.getLastX())) {
         if(r.contains(range.getFirstX(), range.getLastX())) {
@@ -51,7 +53,7 @@ public class ReviewRangeModel {
         newRange.engulf(r);
         dao.deleteById(r.id);
       }
-
+      newRange.inc(); //0 if ingulfed no body, if ingulfed something => 2
       dao.addReviewRange(newRange);
     }).subscribeOn(Schedulers.io());
   }

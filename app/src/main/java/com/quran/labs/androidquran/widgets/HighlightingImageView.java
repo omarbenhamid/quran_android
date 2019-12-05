@@ -92,19 +92,21 @@ public class HighlightingImageView extends AppCompatImageView {
     reviewUnderlinePaint = new Paint();
     reviewUnderlinePaint.setAntiAlias(true);
     reviewUnderlinePaint.setDither(true);
-    reviewUnderlinePaint.setColor(Color.GREEN);
+    reviewUnderlinePaint.setColor(Color.BLUE);
     reviewUnderlinePaint.setStyle(Paint.Style.STROKE);
     reviewUnderlinePaint.setStrokeCap(Paint.Cap.SQUARE);
     reviewUnderlinePaint.setStrokeWidth(10);
 
     reviewClearlinePaint = new Paint(reviewUnderlinePaint);
-    reviewClearlinePaint.setColor(Color.RED);
+    reviewClearlinePaint.setColor(Color.WHITE);
+    reviewClearlinePaint.setAlpha(190);
+    reviewClearlinePaint.setStrokeWidth(30);
 
     reviewRangePaint = new Paint(reviewUnderlinePaint);
     reviewRangePaint.setColor(Color.BLUE);
-    reviewUnderlinePaint.setStrokeCap(Paint.Cap.ROUND);
+    reviewRangePaint.setStrokeCap(Paint.Cap.ROUND);
     reviewRangePaint.setStrokeWidth(4);
-    reviewRangePaint.setAlpha(64);
+    reviewRangePaint.setAlpha(128);
 
   }
 
