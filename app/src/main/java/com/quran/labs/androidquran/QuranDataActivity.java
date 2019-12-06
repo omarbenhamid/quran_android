@@ -583,7 +583,7 @@ public class QuranDataActivity extends Activity implements
   }
 
   protected void runListView() {
-    Intent i = new Intent(this, QuranActivity.class);
+    Intent i = new Intent(this, QuranSelectTalibActivity.class);
     i.putExtra(QuranActivity.EXTRA_SHOW_TRANSLATION_UPGRADE, quranSettings.haveUpdatedTranslations());
     startActivity(i);
     finish();
