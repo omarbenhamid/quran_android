@@ -168,8 +168,6 @@ public class AyahInfoDatabaseHandler {
         for(AyahBounds bound : bounds) {
           //First update line bottom with raw data
           int line = bound.getLine();
-          //TODO: ensure that line is 1 based index
-          assert (line > 0); //TODO: remove me when sure
           LineBottom lb;
           RectF abRect = bound.getBounds();
           if (lineBottoms.size() < line) {

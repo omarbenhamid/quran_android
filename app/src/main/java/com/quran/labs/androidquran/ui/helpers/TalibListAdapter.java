@@ -1,6 +1,5 @@
 package com.quran.labs.androidquran.ui.helpers;
 
-import android.content.Context;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -98,7 +97,6 @@ public class TalibListAdapter extends
 
   @Override
   public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    //TODO: create specific talib_row layout
     final View view = inflater.inflate(R.layout.talib_list_row, parent, false);
     return new ViewHolder(view);
   }
@@ -129,7 +127,6 @@ public class TalibListAdapter extends
     return false;
   }
 
-  //TODO clean the holder when layout is cleaned ...
   class ViewHolder extends RecyclerView.ViewHolder {
 
     TextView title;

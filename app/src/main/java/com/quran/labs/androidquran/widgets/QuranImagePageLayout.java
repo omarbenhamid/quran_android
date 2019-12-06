@@ -2,20 +2,12 @@ package com.quran.labs.androidquran.widgets;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
-import io.reactivex.Completable;
-import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.widget.Toast;
 
-import com.quran.labs.androidquran.database.tahfiz.TahfizDatabase;
-import com.quran.labs.androidquran.database.tahfiz.dao.ReviewRangeDAO;
 import com.quran.labs.androidquran.ui.helpers.AyahSelectedListener;
 import com.quran.labs.androidquran.ui.util.PageController;
 import com.quran.labs.androidquran.util.QuranSettings;
