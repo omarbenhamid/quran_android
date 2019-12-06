@@ -26,14 +26,13 @@ public class TalibListAdapter extends
     RecyclerView.Adapter<TalibListAdapter.ViewHolder>
     implements View.OnClickListener, View.OnLongClickListener {
 
-  private Context context;
+  private QuranSelectTalibActivity context;
   private LayoutInflater inflater;
   private Talib[] elements;
   private RecyclerView recyclerView;
   private SparseBooleanArray checkedState;
-  private TalibTouchListener touchListener;
 
-  public TalibListAdapter(Context context, RecyclerView recyclerView) {
+  public TalibListAdapter(QuranSelectTalibActivity context, RecyclerView recyclerView) {
     inflater = LayoutInflater.from(context);
     this.recyclerView = recyclerView;
     this.context = context;
@@ -112,32 +111,21 @@ public class TalibListAdapter extends
     holder.setEnabled(true);
   }
 
-
-  public void setTouchListener(TalibTouchListener listener) {
-    touchListener = listener;
-  }
-
   @Override
   public void onClick(View v) {
     final int position = recyclerView.getChildAdapterPosition(v);
     if (position != RecyclerView.NO_POSITION) {
-      final Talib element = elements[position];
-      if (touchListener == null) {
-        ((QuranSelectTalibActivity) context).selectTalib(element);
-      } else {
-        touchListener.onClick(element, position);
-      }
+      context.selectTalib(elements[position]);
     }
   }
 
   @Override
   public boolean onLongClick(View v) {
-    if (touchListener != null) {
-      final int position = recyclerView.getChildAdapterPosition(v);
-      if (position != RecyclerView.NO_POSITION) {
-        return touchListener.onLongClick(elements[position], position);
-      }
+    final int position = recyclerView.getChildAdapterPosition(v);
+    if (position != RecyclerView.NO_POSITION) {
+      context.editTalib(elements[position]);
     }
+
     return false;
   }
 
@@ -164,13 +152,5 @@ public class TalibListAdapter extends
       view.setActivated(checked);
     }
 
-  }
-
-  //TODO: Do we really need this interface ?
-  public interface TalibTouchListener {
-
-    void onClick(Talib row, int position);
-
-    boolean onLongClick(Talib row, int position);
   }
 }

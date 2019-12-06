@@ -393,4 +393,9 @@
   <string name="select_talib">Select Talib</string>
   <string name="dialog_add_talib">New Talib</string>
   <string name="add_talib">Add Talib</string>
+  <string name="update_talib">Rename</string>
+  <string name="delete_talib">Delete</string>
+  <string name="dialog_edit_talib">Edit Talib</string>
+  <string name="dialog_delete_talib">Delete Talib</string>
+  <string name="confirm_delete_talib">Are you sure ?</string>
 </resources>

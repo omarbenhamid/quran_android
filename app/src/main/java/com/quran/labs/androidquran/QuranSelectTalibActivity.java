@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.quran.labs.androidquran.database.BookmarksDBAdapter;
 import com.quran.labs.androidquran.database.tahfiz.SharedTahfizDatabase;
 import com.quran.labs.androidquran.database.tahfiz.dao.TalibDAO;
 import com.quran.labs.androidquran.database.tahfiz.entities.Talib;
@@ -17,7 +16,6 @@ import com.quran.labs.androidquran.util.QuranSettings;
 
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,6 +28,8 @@ import io.reactivex.schedulers.Schedulers;
 
 public class QuranSelectTalibActivity extends Activity {
   private RecyclerView mRecyclerView;
+  private TalibListAdapter talibListAdapter;
+
   private TalibDAO talibDAO;
   private CompositeDisposable disposables = new CompositeDisposable();
 
@@ -43,9 +43,8 @@ public class QuranSelectTalibActivity extends Activity {
     mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-    final TalibListAdapter adapter =
-        new TalibListAdapter(this, mRecyclerView);
-    mRecyclerView.setAdapter(adapter);
+    talibListAdapter = new TalibListAdapter(this, mRecyclerView);
+    mRecyclerView.setAdapter(talibListAdapter);
 
     talibDAO = SharedTahfizDatabase.getInstance(this).talibDAO();
 
@@ -60,7 +59,7 @@ public class QuranSelectTalibActivity extends Activity {
                 .fromRunnable( () -> talibDAO.addTalib(new Talib(talibName.getText().toString())))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(adapter::reload));
+                .subscribe(talibListAdapter::reload));
 
           }).show();
     });
@@ -84,13 +83,43 @@ public class QuranSelectTalibActivity extends Activity {
     ((QuranApplication)getApplication()).resetApplicationComponent();
     settings.setLastTalibId(t.id);
     runListView();
-
-    /*TODO:
-    1. this lastpage setting does not seem to suffice.
-    2. Also set scroll in index view ?
-    3. Titles in index view = talib name
-    */
   }
 
 
+  public void editTalib(Talib element) {
+    final EditText talibName = new EditText(this);
+    talibName.setText(element.name);
+
+    new AlertDialog.Builder(this)
+        .setTitle(R.string.dialog_edit_talib)
+        .setView(talibName)
+        .setPositiveButton(R.string.update_talib, (DialogInterface dialog, int which) -> {
+          disposables.add(Completable
+              .fromRunnable( () -> {
+                element.name = talibName.getText().toString();
+                talibDAO.update(element);
+              })
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(talibListAdapter::reload)
+          );
+        })
+        .setNegativeButton(R.string.delete_talib, (DialogInterface dialog, int which) -> {
+              new AlertDialog.Builder(this)
+                  .setTitle(R.string.dialog_delete_talib)
+                  .setMessage(R.string.confirm_delete_talib)
+                  .setPositiveButton(R.string.delete_talib, (DialogInterface d, int w) -> {
+                    disposables.add(Completable
+                        .fromRunnable(() -> {
+                          talibDAO.delete(element.id);
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(talibListAdapter::reload)
+                    );
+
+                  }).show();
+            })
+        .show();
+  }
 }
