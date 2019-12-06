@@ -2,14 +2,14 @@ package com.quran.labs.androidquran.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import com.quran.labs.androidquran.data.Constants;
+import com.quran.labs.androidquran.database.tahfiz.MultiTalibSQLiteOpenHelper;
 import com.quran.labs.androidquran.util.QuranSettings;
 
 import timber.log.Timber;
 
-class BookmarksDBHelper extends SQLiteOpenHelper {
+class BookmarksDBHelper extends MultiTalibSQLiteOpenHelper {
 
   private static final String DB_NAME = "bookmarks.db";
   private static final int DB_VERSION = 3;

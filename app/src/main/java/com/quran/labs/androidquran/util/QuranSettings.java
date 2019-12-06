@@ -128,6 +128,15 @@ public class QuranSettings {
     return prefs.getInt(Constants.PREF_LAST_PAGE, Constants.NO_PAGE);
   }
 
+  public Integer getLastTalibId() {
+    int ret = prefs.getInt(Constants.PREF_LAST_TALIB, -1);
+    return ret < 0 ? null : ret;
+  }
+
+  public void setLastTalibId(int id) {
+    prefs.edit().putInt(Constants.PREF_LAST_TALIB, id).apply();
+  }
+
   public int getBookmarksSortOrder() {
     return prefs.getInt(Constants.PREF_SORT_BOOKMARKS, 0);
   }

@@ -5,7 +5,6 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.quran.labs.androidquran.QuranSelectTalibActivity;
@@ -146,23 +145,13 @@ public class TalibListAdapter extends
   class ViewHolder extends RecyclerView.ViewHolder {
 
     TextView title;
-    TextView pageNumber;
     View view;
-    TextView number;
-    TextView metadata;
-    ImageView image;
-    TextView date;
 
 
     ViewHolder(View itemView) {
       super(itemView);
       view = itemView;
       title = itemView.findViewById(R.id.title);
-      pageNumber = itemView.findViewById(R.id.pageNumber);
-      metadata = itemView.findViewById(R.id.metadata);
-      number = itemView.findViewById(R.id.suraNumber);
-      image = itemView.findViewById(R.id.rowIcon);
-      date = itemView.findViewById(R.id.show_date);
     }
 
     void setEnabled(boolean enabled) {

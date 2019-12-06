@@ -15,7 +15,7 @@ public abstract class TahfizDatabase extends RoomDatabase {
 
   public static TahfizDatabase getInstance(Context ctx) {
     return Room.databaseBuilder(ctx.getApplicationContext(),
-        TahfizDatabase.class, "tahfiz")
+        TahfizDatabase.class, MultiTalibSQLiteOpenHelper.getDBName(ctx,"tahfiz"))
         .fallbackToDestructiveMigration().build();
   }
 }

@@ -7,11 +7,13 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.quran.labs.androidquran.database.BookmarksDBAdapter;
 import com.quran.labs.androidquran.database.tahfiz.SharedTahfizDatabase;
 import com.quran.labs.androidquran.database.tahfiz.dao.TalibDAO;
 import com.quran.labs.androidquran.database.tahfiz.entities.Talib;
 import com.quran.labs.androidquran.ui.QuranActivity;
 import com.quran.labs.androidquran.ui.helpers.TalibListAdapter;
+import com.quran.labs.androidquran.util.QuranSettings;
 
 import android.view.View;
 import android.widget.EditText;
@@ -75,11 +77,19 @@ public class QuranSelectTalibActivity extends Activity {
     i.putExtra(QuranActivity.EXTRA_SHOW_TRANSLATION_UPGRADE,
         getIntent().getBooleanExtra(QuranActivity.EXTRA_SHOW_TRANSLATION_UPGRADE, false));
     startActivity(i);
-    finish();
   }
 
   public void selectTalib(Talib t) {
-    Toast.makeText(this, "TAlib" + t.name + " selected ! that's neet", Toast.LENGTH_LONG).show();
+    QuranSettings settings = QuranSettings.getInstance(this);
+
+    settings.setLastTalibId(t.id);
+    runListView();
+
+    /*TODO:
+    1. this lastpage setting does not seem to suffice.
+    2. Also set scroll in index view ?
+    3. Titles in index view = talib name
+    */
   }
 
 

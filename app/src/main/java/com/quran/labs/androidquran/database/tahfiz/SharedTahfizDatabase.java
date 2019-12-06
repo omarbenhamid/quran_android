@@ -11,7 +11,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {Talib.class}, version=1)
+@Database(entities = {Talib.class}, version=2)
 public abstract class SharedTahfizDatabase extends RoomDatabase {
   public abstract TalibDAO talibDAO();
 
