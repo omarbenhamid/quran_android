@@ -45,6 +45,10 @@ public class QuranApplication extends Application {
     return this.applicationComponent;
   }
 
+  public void resetApplicationComponent() {
+    this.applicationComponent = initializeInjector();
+  }
+
   public void refreshLocale(@NonNull Context context, boolean force) {
     final String language = QuranSettings.getInstance(this).isArabicNames() ? "ar" : null;
 

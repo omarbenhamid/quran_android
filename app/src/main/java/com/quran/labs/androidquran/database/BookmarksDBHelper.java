@@ -2,14 +2,14 @@ package com.quran.labs.androidquran.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import com.quran.labs.androidquran.data.Constants;
-import com.quran.labs.androidquran.database.tahfiz.MultiTalibSQLiteOpenHelper;
 import com.quran.labs.androidquran.util.QuranSettings;
 
 import timber.log.Timber;
 
-class BookmarksDBHelper extends MultiTalibSQLiteOpenHelper {
+class BookmarksDBHelper extends SQLiteOpenHelper {
 
   private static final String DB_NAME = "bookmarks.db";
   private static final int DB_VERSION = 3;
@@ -95,10 +95,17 @@ class BookmarksDBHelper extends MultiTalibSQLiteOpenHelper {
           LastPagesTable.ADDED_DATE + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP);";
 
   private static BookmarksDBHelper sInstance;
+  private static Integer instanceTalibId;
 
   public static BookmarksDBHelper getInstance(Context context, int numberOfPages) {
+    Integer tid = QuranSettings.getInstance(context).getLastTalibId();
+    if(tid != null && ! tid.equals(instanceTalibId)) {
+      if(sInstance != null) sInstance.close();
+      sInstance = null;
+    }
     if (sInstance == null) {
       sInstance = new BookmarksDBHelper(context.getApplicationContext(), numberOfPages);
+      instanceTalibId = tid;
     }
     return sInstance;
   }
@@ -107,7 +114,7 @@ class BookmarksDBHelper extends MultiTalibSQLiteOpenHelper {
   private final int totalPages;
 
   private BookmarksDBHelper(Context context, int numberOfPages) {
-    super(context, DB_NAME, null, DB_VERSION);
+    super(context, DatabaseUtils.getTalibDBName(context, DB_NAME), null, DB_VERSION);
     QuranSettings quranSettings = QuranSettings.getInstance(context);
     lastPage = quranSettings.getLastPage();
     totalPages = numberOfPages;

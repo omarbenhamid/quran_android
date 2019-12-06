@@ -15,6 +15,6 @@ public interface TalibDAO {
   @Insert
   void addTalib(Talib talib);
 
-  @Query("UPDATE talib SET lastPage = :lastPage WHERE id=:talibId")
-  void updateLastPage(Integer talibId, int lastPage);
+  @Query("SELECT * FROM talib WHERE id=:talibId")
+  Talib findById(int talibId);
 }

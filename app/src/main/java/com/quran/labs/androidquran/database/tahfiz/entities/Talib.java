@@ -9,9 +9,6 @@ public class Talib {
   @PrimaryKey(autoGenerate =  true)
   public int id;
 
-  @ColumnInfo(defaultValue = "-1")
-  public int lastPage = -1;
-
   @ColumnInfo
   public String name;
 

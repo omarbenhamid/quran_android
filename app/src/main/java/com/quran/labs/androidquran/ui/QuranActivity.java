@@ -21,6 +21,9 @@ import com.quran.labs.androidquran.R;
 import com.quran.labs.androidquran.SearchActivity;
 import com.quran.labs.androidquran.ShortcutsActivity;
 import com.quran.labs.androidquran.data.Constants;
+import com.quran.labs.androidquran.database.tahfiz.SharedTahfizDatabase;
+import com.quran.labs.androidquran.database.tahfiz.TahfizDatabase;
+import com.quran.labs.androidquran.database.tahfiz.entities.Talib;
 import com.quran.labs.androidquran.model.bookmark.RecentPageModel;
 import com.quran.labs.androidquran.presenter.translation.TranslationManagerPresenter;
 import com.quran.labs.androidquran.service.AudioService;
@@ -55,6 +58,7 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class QuranActivity extends QuranActionBarActivity
@@ -111,6 +115,15 @@ public class QuranActivity extends QuranActionBarActivity
 
     final ActionBar ab = getSupportActionBar();
     if (ab != null) {
+      compositeDisposable.add(
+          Observable.fromCallable(() -> {
+            return SharedTahfizDatabase.getInstance(this).talibDAO()
+                .findById(settings.getLastTalibId());
+          })
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe((Talib t) -> ab.setTitle(t.name))
+      );
       ab.setTitle(R.string.app_name);
     }
 

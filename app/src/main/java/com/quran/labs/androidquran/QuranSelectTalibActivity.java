@@ -81,7 +81,7 @@ public class QuranSelectTalibActivity extends Activity {
 
   public void selectTalib(Talib t) {
     QuranSettings settings = QuranSettings.getInstance(this);
-
+    ((QuranApplication)getApplication()).resetApplicationComponent();
     settings.setLastTalibId(t.id);
     runListView();
 

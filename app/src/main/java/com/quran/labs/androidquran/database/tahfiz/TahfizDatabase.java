@@ -2,6 +2,7 @@ package com.quran.labs.androidquran.database.tahfiz;
 
 import android.content.Context;
 
+import com.quran.labs.androidquran.database.DatabaseUtils;
 import com.quran.labs.androidquran.database.tahfiz.dao.ReviewRangeDAO;
 import com.quran.labs.androidquran.database.tahfiz.entities.ReviewRange;
 
@@ -15,7 +16,7 @@ public abstract class TahfizDatabase extends RoomDatabase {
 
   public static TahfizDatabase getInstance(Context ctx) {
     return Room.databaseBuilder(ctx.getApplicationContext(),
-        TahfizDatabase.class, MultiTalibSQLiteOpenHelper.getDBName(ctx,"tahfiz"))
+        TahfizDatabase.class, DatabaseUtils.getTalibDBName(ctx,"tahfiz"))
         .fallbackToDestructiveMigration().build();
   }
 }
