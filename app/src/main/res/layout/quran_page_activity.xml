@@ -7,7 +7,7 @@
     android:keepScreenOn="true"
     >
 
-  <com.quran.labs.androidquran.widgets.NonSwipingViewPager
+  <com.quran.labs.androidquran.widgets.VerticalViewPager
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:id="@+id/quran_pager"

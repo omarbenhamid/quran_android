@@ -374,6 +374,11 @@ public class TabletFragment extends Fragment
   }
 
   @Override
+  public void handleFingerMotionCancel() {
+    // no-op - finger motion not supported in this mode
+  }
+
+  @Override
   public void setReviewRanges(List<ReviewRange> ranges) {
     // no-op
   }

@@ -11,4 +11,5 @@ public interface PageController {
   void handleFingerMotionStart(float x, float y);
   void handleFingerMotionUpdate(float x0, float y0, float x, float y);
   void handleFingerMotionEnd(float x0, float y0, float x, float y);
+  void handleFingerMotionCancel();
 }

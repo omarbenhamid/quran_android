@@ -267,4 +267,8 @@ public class QuranPageFragment extends Fragment implements PageController,
     quranPagePresenter.updateReviewRanges(pageNumber, createMotionRange(x0 , y0, x , y ));
   }
 
+  @Override
+  public void handleFingerMotionCancel() {
+    imageView.updateTemporaryReviewRange(null);
+  }
 }

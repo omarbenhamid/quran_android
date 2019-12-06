@@ -85,6 +85,7 @@ public class QuranImagePageLayout extends QuranPageLayout {
     private int touchSlopSquare;
     private float x0, y0;
     private boolean moving;
+    private boolean canceled;
 
 
     public GestureAndMoveDetector() {
@@ -105,8 +106,10 @@ public class QuranImagePageLayout extends QuranPageLayout {
           x0 = x;
           y0 = y;
           moving = false;
+          canceled = false;
           break;
         case MotionEvent.ACTION_MOVE:
+          if(canceled) break;
           if(! moving) {
             //Here notify pageController to somehow draw a "temporary" line on image view
             //Idea show above the simbol a eraser icon when moving from left to right and stylo plume
@@ -117,16 +120,26 @@ public class QuranImagePageLayout extends QuranPageLayout {
             if(dstSq <= touchSlopSquare) break;
             moving = true;
             pageController.handleFingerMotionStart(x0, y0);
+          } else {
+            int dx = (int)(x - x0);
+            dx = dx * dx;
+
+            int dy = (int)(y - y0);
+            dy = dy * dy;
+
+            if(dy > (dx + touchSlopSquare * 4)) {
+              pageController.handleFingerMotionCancel();
+              canceled = true;
+              break;
+            }
           }
           //Here we are moving
           pageController.handleFingerMotionUpdate(x0, y0, x, y);
-          Log.d(
-              "QPL","Moving to" + x +","+ y);
 
           break;
         case MotionEvent.ACTION_UP:
+          if(canceled) break;
           if(moving) {
-            Log.d("QPL", "Up " + x + "," + y);
             //Here notify the pageController to do the precise position using glyphdb, and save it.
             pageController.handleFingerMotionEnd(x0, y0, x, y);
           }
