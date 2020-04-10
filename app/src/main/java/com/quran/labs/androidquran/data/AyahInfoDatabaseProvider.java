@@ -17,7 +17,7 @@ public class AyahInfoDatabaseProvider {
   @Nullable private AyahInfoDatabaseHandler databaseHandler;
 
   @Inject
-  AyahInfoDatabaseProvider(Context context, String widthParameter, QuranFileUtils quranFileUtils) {
+  public AyahInfoDatabaseProvider(Context context, String widthParameter, QuranFileUtils quranFileUtils) {
     this.context = context;
     this.widthParameter = widthParameter;
     this.quranFileUtils = quranFileUtils;

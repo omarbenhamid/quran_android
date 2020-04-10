@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.quran.labs.androidquran.data.AyahInfoDatabaseHandler;
+import com.quran.labs.androidquran.data.AyahInfoDatabaseProvider;
 import com.quran.labs.androidquran.database.tahfiz.SharedTahfizDatabase;
 import com.quran.labs.androidquran.database.tahfiz.dao.TalibDAO;
 import com.quran.labs.androidquran.database.tahfiz.entities.Talib;
@@ -29,6 +31,9 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import javax.inject.Inject;
+
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
 import io.reactivex.Observable;
@@ -38,6 +43,7 @@ import io.reactivex.schedulers.Schedulers;
 
 
 public class QuranSelectTalibActivity extends QuranActionBarActivity {
+
   private static final String LOG_TAG = "QTA";
   private RecyclerView mRecyclerView;
   private TalibListAdapter talibListAdapter;

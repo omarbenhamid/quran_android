@@ -404,4 +404,6 @@
   <string name="hifzo_svr_error">Cannot connect to server</string>
   <string name="hifzo_open">Open in Hifzo</string>
   <string name="hifzo_updating_talibs">Updating talibs from hifzo</string>
+  <string name="hifzo_uploading_data">Sending %d/%d</string>
+  <string name="hifzo_ayahdb_notready">Quran data not downloaded yet</string>
 </resources>

@@ -40,6 +40,7 @@ public class AyahInfoDatabaseHandler {
   private static Map<String, AyahInfoDatabaseHandler> ayahInfoCache = new HashMap<>();
   private static String quranDatabaseDirectory = "";
 
+
   private final SQLiteDatabase database;
 
   static AyahInfoDatabaseHandler getAyahInfoDatabaseHandler(
@@ -253,5 +254,24 @@ public class AyahInfoDatabaseHandler {
         COL_PAGE + "=" + page,
         null, null, null,
         COL_SURA + "," + COL_AYAH + "," + COL_POSITION);
+  }
+
+  /**
+   * Query glyphs itnersecting the given range
+   * @param page
+   * @param line
+   * @param minX
+   * @param maxX
+   * @return A cursor with following columns : 1. suraindex, 2. ayahindex, 3. potiion in ayah.
+   */
+  public Cursor findIntersectingGlyphs(int page, int line, float minX, float maxX) {
+   return database.query(GLYPHS_TABLE,
+        new String[] {COL_SURA, COL_AYAH, COL_POSITION},
+        COL_PAGE+"="+page
+            + " AND " + COL_LINE+"="+line
+            + " AND " + MIN_X+"<="+maxX
+            + " AND " + MAX_X+">="+minX,
+        null,null,null,
+       COL_AYAH+","+COL_POSITION);
   }
 }

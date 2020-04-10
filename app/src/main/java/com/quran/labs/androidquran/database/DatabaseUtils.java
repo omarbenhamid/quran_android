@@ -8,7 +8,10 @@ import com.quran.labs.androidquran.util.QuranSettings;
 public class DatabaseUtils {
 
   public static String getTalibDBName(Context context, String prefix) {
-    Integer talibId = QuranSettings.getInstance(context).getLastTalibId();
+    return getTalibDBName(QuranSettings.getInstance(context).getLastTalibId(), prefix);
+  }
+
+  public static String getTalibDBName(Integer talibId, String prefix) {
     return talibId == null ? prefix : prefix + "-talib-" + talibId;
   }
 

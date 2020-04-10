@@ -13,6 +13,9 @@ public interface TalibDAO {
   @Query("SELECT * FROM talib ORDER BY name ASC")
   Talib[] listAllTalibs();
 
+  @Query("SELECT * FROM talib WHERE hifzoServerKey IS NOT NULL ORDER BY name ASC")
+  Talib[] listHifzoTalibs();
+
   @Insert
   void addTalib(Talib talib);
 

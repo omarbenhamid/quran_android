@@ -33,7 +33,7 @@ public class ReviewRangeModel {
       ReviewRangeDAO dao = db.reviewRangeDAO();
       if(range.isDeleting()) {
         dao.decreaseIntersecting(pageNumber, range.getLine(),
-            range.getFirstX(), range.getLastX());
+            range.getFirstX(), range.getLastX(), ReviewRange.currentTimestamp());
         dao.deleteNullCount();
         return;
       }
@@ -46,6 +46,7 @@ public class ReviewRangeModel {
           range.getFirstX(), range.getLastX())) {
         if(r.contains(range.getFirstX(), range.getLastX())) {
           r.inc();
+          r.setUnsynced();
           dao.update(r);
           return;
         }

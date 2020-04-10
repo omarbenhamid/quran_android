@@ -35,13 +35,13 @@ public class ApplicationModule {
   }
 
   @Provides
-  Display provideDisplay(Context appContext) {
+  public static Display provideDisplay(Context appContext) {
     final WindowManager w = (WindowManager) appContext.getSystemService(Context.WINDOW_SERVICE);
     return w.getDefaultDisplay();
   }
 
   @Provides
-  DisplaySize provideDisplaySize(Display display) {
+  public static DisplaySize provideDisplaySize(Display display) {
     final Point point = new Point();
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       display.getRealSize(point);

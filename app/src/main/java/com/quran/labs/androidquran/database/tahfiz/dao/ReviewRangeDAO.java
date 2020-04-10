@@ -19,8 +19,8 @@ public interface ReviewRangeDAO {
   @Query("SELECT * FROM review_range WHERE page=:pageNum")
   List<ReviewRange> loadAllByPage(int pageNum);
 
-  @Query("UPDATE review_range SET count=count-1 WHERE page=:pageNum AND line=:line AND firstX < :lastX AND lastX > :firstX")
-  int decreaseIntersecting(int pageNum, int line, float firstX, float lastX);
+  @Query("UPDATE review_range SET count=count-1, synced=0, timestamp=:timestamp WHERE page=:pageNum AND line=:line AND firstX < :lastX AND lastX > :firstX")
+  int decreaseIntersecting(int pageNum, int line, float firstX, float lastX, long timestamp);
 
   @Query("DELETE FROM review_range WHERE count <= 0")
   void deleteNullCount();
@@ -33,4 +33,11 @@ public interface ReviewRangeDAO {
 
   @Query("DELETE FROM review_range WHERE id=:id")
   void deleteById(int id);
+
+  @Query("SELECT * FROM review_range WHERE NOT synced")
+  List<ReviewRange> listUnsynced();
+
+  @Query("UPDATE review_range SET synced=1 WHERE NOT synced")
+  int markAllSynced();
+
 }
