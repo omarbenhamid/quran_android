@@ -415,4 +415,22 @@ public class QuranSettings {
   public boolean getWasShowingTranslation() {
     return perInstallationPrefs.getBoolean(Constants.PREF_WAS_SHOWING_TRANSLATION, false);
   }
+
+  public void setSavedHifzoLogin(String login) {
+    perInstallationPrefs.edit().putString(Constants.PREF_HIFZO_LOGIN,
+        login).apply();
+  }
+
+  public String getSavedHifzoLogin() {
+    return perInstallationPrefs.getString(Constants.PREF_HIFZO_LOGIN, "");
+  }
+
+  public void setSavedHifzoPassword(String pass) {
+    perInstallationPrefs.edit().putString(Constants.PREF_HIFZO_PASSWORD,
+        pass).apply();
+  }
+
+  public String getSavedHifzoPassword() {
+    return perInstallationPrefs.getString(Constants.PREF_HIFZO_PASSWORD, "");
+  }
 }

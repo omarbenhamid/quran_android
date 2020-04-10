@@ -1,9 +1,11 @@
 package com.quran.labs.androidquran.ui.helpers;
 
+import android.graphics.drawable.Drawable;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.quran.labs.androidquran.QuranSelectTalibActivity;
@@ -31,11 +33,16 @@ public class TalibListAdapter extends
   private RecyclerView recyclerView;
   private SparseBooleanArray checkedState;
 
+  Drawable ico_hifzo;
+  Drawable ico_offline;
+
   public TalibListAdapter(QuranSelectTalibActivity context, RecyclerView recyclerView) {
     inflater = LayoutInflater.from(context);
     this.recyclerView = recyclerView;
     this.context = context;
     checkedState = new SparseBooleanArray();
+    ico_hifzo = context.getResources().getDrawable(R.drawable.ic_link);
+    ico_offline= context.getResources().getDrawable(R.drawable.ic_goto_quran);
     reload(); //Initial reload
   }
 
@@ -105,6 +112,8 @@ public class TalibListAdapter extends
   public void onBindViewHolder(ViewHolder holder, int pos) {
     final Talib item = elements[pos];
     holder.title.setText(item.name);
+    ((ImageView)holder.view.findViewById(R.id.rowIcon)).setImageDrawable(
+        item.hifzoServerKey == null ? ico_offline : ico_hifzo);
     holder.setChecked(isItemChecked(pos));
     holder.setEnabled(true);
   }

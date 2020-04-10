@@ -81,4 +81,6 @@ public class Constants {
   public static final String DEBUG_PAGES_DOWNLOADED = "debugPagesDownloaded";
   public static final String PREF_READING_CATEGORY = "readingCategoryKey";
   public static final String PREF_LAST_TALIB = "lastTalibId";
+  public static final String PREF_HIFZO_LOGIN = "hifzoLogin";
+  public static final String PREF_HIFZO_PASSWORD = "hifzoPass";
 }

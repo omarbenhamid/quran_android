@@ -2,6 +2,7 @@ package com.quran.labs.androidquran;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,23 +11,32 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.quran.labs.androidquran.database.tahfiz.SharedTahfizDatabase;
 import com.quran.labs.androidquran.database.tahfiz.dao.TalibDAO;
 import com.quran.labs.androidquran.database.tahfiz.entities.Talib;
+import com.quran.labs.androidquran.ui.QuranActionBarActivity;
 import com.quran.labs.androidquran.ui.QuranActivity;
+import com.quran.labs.androidquran.ui.helpers.HifzoSyncAction;
 import com.quran.labs.androidquran.ui.helpers.TalibListAdapter;
 import com.quran.labs.androidquran.util.QuranSettings;
 
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Switch;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 
-public class QuranSelectTalibActivity extends Activity {
+public class QuranSelectTalibActivity extends QuranActionBarActivity {
+  private static final String LOG_TAG = "QTA";
   private RecyclerView mRecyclerView;
   private TalibListAdapter talibListAdapter;
 
@@ -50,25 +60,85 @@ public class QuranSelectTalibActivity extends Activity {
 
     FloatingActionButton fab = findViewById(R.id.fab);
     fab.setOnClickListener( (View view) -> {
-      final EditText talibName = new EditText(this);
-      new AlertDialog.Builder(this)
-          .setTitle(R.string.dialog_add_talib)
-          .setView(talibName)
-          .setPositiveButton(R.string.add_talib, (DialogInterface dialog, int which) -> {
-            disposables.add(Completable
-                .fromRunnable( () -> talibDAO.addTalib(new Talib(talibName.getText().toString())))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(talibListAdapter::reload));
-
-          }).show();
+      addTalib();
     });
+  }
+
+  private void addTalib() {
+    final EditText talibName = new EditText(this);
+    new AlertDialog.Builder(this)
+        .setTitle(R.string.dialog_add_talib)
+        .setView(talibName)
+        .setPositiveButton(R.string.add_talib, (DialogInterface dialog, int which) -> {
+          disposables.add(Completable
+              .fromRunnable( () -> talibDAO.addTalib(new Talib(talibName.getText().toString())))
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(talibListAdapter::reload));
+
+        }).show();
   }
 
   @Override
   protected void onDestroy() {
     disposables.clear();
     super.onDestroy();
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    menu.add(R.string.add_talib).setOnMenuItemClickListener((MenuItem i) -> {
+      addTalib();
+      return true;
+    });
+    menu.add(R.string.hifzo_sync).setOnMenuItemClickListener((MenuItem i) -> {
+      final View dlgView = getLayoutInflater().inflate(R.layout.hifzo_sync, null);
+      QuranSettings settings = QuranSettings.getInstance(this);
+      ((TextView)dlgView.findViewById(R.id.hifzo_login)).setText(settings.getSavedHifzoLogin());
+      ((TextView)dlgView.findViewById(R.id.hifzo_login)).setText(settings.getSavedHifzoPassword());
+      dlgView.findViewById(R.id.hifzo_syncerr).setVisibility(View.INVISIBLE);
+      AlertDialog dlg = new AlertDialog.Builder(this)
+          .setTitle(R.string.hifzo_sync)
+          .setView(dlgView)
+          .setPositiveButton(R.string.sync_now, null)
+          .setNegativeButton(R.string.cancel, null).show();
+
+      dlg.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(
+          (View v) -> {
+            dlgView.findViewById(R.id.hifzo_syncerr).setVisibility(View.INVISIBLE);
+            String login = ((TextView)dlgView.findViewById(R.id.hifzo_login)).getText().toString();
+            String password = ((TextView)dlgView.findViewById(R.id.hifzo_pass)).getText().toString();
+            boolean savePass = ((Switch)dlgView.findViewById(R.id.hifzo_rem_pass)).isChecked();
+            final ProgressDialog progress = new ProgressDialog(QuranSelectTalibActivity.this);
+            progress.show();
+            disposables.add(
+                Completable.fromAction(new HifzoSyncAction(this, talibDAO, login, password))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(() -> {
+                      progress.dismiss();
+                      settings.setSavedHifzoLogin(login);
+                      if(savePass)
+                        settings.setSavedHifzoPassword(password);
+                      else
+                        settings.setSavedHifzoPassword("");
+                      talibListAdapter.reload();
+                      dlg.dismiss();
+                    },(Throwable ex) -> {
+                      progress.dismiss();
+                      ((TextView)dlgView.findViewById(R.id.hifzo_syncerr)).setText(ex.getMessage());
+                      dlgView.findViewById(R.id.hifzo_syncerr).setVisibility(View.VISIBLE);
+                      talibListAdapter.reload();
+                      Log.d(LOG_TAG, "Error connecting to hifzo", ex);
+                    })
+            );
+
+          }
+      );
+      return true;
+    });
+
+    return super.onCreateOptionsMenu(menu);
   }
 
   protected void runListView() {

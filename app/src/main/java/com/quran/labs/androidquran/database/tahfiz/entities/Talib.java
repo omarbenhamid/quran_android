@@ -12,6 +12,12 @@ public class Talib {
   @ColumnInfo
   public String name;
 
+  @ColumnInfo
+  public String hifzoServerKey;
+
+  @ColumnInfo
+  public String hifzoUrl;
+
   public Talib() {
 
   }

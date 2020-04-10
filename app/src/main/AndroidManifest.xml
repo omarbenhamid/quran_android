@@ -28,7 +28,7 @@
     <activity
         android:name=".QuranSelectTalibActivity"
         android:label="@string/select_talib"
-        android:theme="@style/Theme.AppCompat.NoActionBar">
+        android:theme="@style/Quran">
     </activity>
     <activity
         android:name=".QuranDataActivity"

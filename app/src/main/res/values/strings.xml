@@ -398,4 +398,8 @@
   <string name="dialog_edit_talib">Edit Talib</string>
   <string name="dialog_delete_talib">Delete Talib</string>
   <string name="confirm_delete_talib">Are you sure ?</string>
+  <string name="hifzo_sync">Sync. with hifzo.com</string>
+  <string name="sync_now">Sync</string>
+  <string name="hifzo_bad_login">Bad login or password</string>
+  <string name="hifzo_svr_error">Cannot connect to server</string>
 </resources>

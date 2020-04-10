@@ -25,4 +25,9 @@ public interface TalibDAO {
   @Query("SELECT * FROM talib WHERE id=:talibId")
   Talib findById(int talibId);
 
+  @Query("SELECT * FROM talib WHERE hifzoServerKey=:serverKey")
+  Talib findByServerKey(String serverKey);
+
+
+
 }
