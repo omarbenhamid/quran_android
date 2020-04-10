@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -95,7 +96,10 @@ public class QuranSelectTalibActivity extends QuranActionBarActivity {
       final View dlgView = getLayoutInflater().inflate(R.layout.hifzo_sync, null);
       QuranSettings settings = QuranSettings.getInstance(this);
       ((TextView)dlgView.findViewById(R.id.hifzo_login)).setText(settings.getSavedHifzoLogin());
-      ((TextView)dlgView.findViewById(R.id.hifzo_login)).setText(settings.getSavedHifzoPassword());
+      String sp = settings.getSavedHifzoPassword();
+      ((TextView)dlgView.findViewById(R.id.hifzo_pass)).setText(sp);
+      ((Switch)dlgView.findViewById(R.id.hifzo_rem_pass)).setChecked(!sp.isEmpty());
+
       dlgView.findViewById(R.id.hifzo_syncerr).setVisibility(View.INVISIBLE);
       AlertDialog dlg = new AlertDialog.Builder(this)
           .setTitle(R.string.hifzo_sync)
@@ -109,6 +113,8 @@ public class QuranSelectTalibActivity extends QuranActionBarActivity {
             String login = ((TextView)dlgView.findViewById(R.id.hifzo_login)).getText().toString();
             String password = ((TextView)dlgView.findViewById(R.id.hifzo_pass)).getText().toString();
             boolean savePass = ((Switch)dlgView.findViewById(R.id.hifzo_rem_pass)).isChecked();
+            if(!savePass) settings.setSavedHifzoPassword("");
+
             final ProgressDialog progress = new ProgressDialog(QuranSelectTalibActivity.this);
             progress.show();
             disposables.add(
@@ -120,8 +126,6 @@ public class QuranSelectTalibActivity extends QuranActionBarActivity {
                       settings.setSavedHifzoLogin(login);
                       if(savePass)
                         settings.setSavedHifzoPassword(password);
-                      else
-                        settings.setSavedHifzoPassword("");
                       talibListAdapter.reload();
                       dlg.dismiss();
                     },(Throwable ex) -> {
@@ -160,36 +164,46 @@ public class QuranSelectTalibActivity extends QuranActionBarActivity {
     final EditText talibName = new EditText(this);
     talibName.setText(element.name);
 
-    new AlertDialog.Builder(this)
+    AlertDialog.Builder b = new AlertDialog.Builder(this)
         .setTitle(R.string.dialog_edit_talib)
         .setView(talibName)
-        .setPositiveButton(R.string.update_talib, (DialogInterface dialog, int which) -> {
-          disposables.add(Completable
-              .fromRunnable( () -> {
-                element.name = talibName.getText().toString();
-                talibDAO.update(element);
-              })
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(talibListAdapter::reload)
-          );
-        })
         .setNegativeButton(R.string.delete_talib, (DialogInterface dialog, int which) -> {
-              new AlertDialog.Builder(this)
-                  .setTitle(R.string.dialog_delete_talib)
-                  .setMessage(R.string.confirm_delete_talib)
-                  .setPositiveButton(R.string.delete_talib, (DialogInterface d, int w) -> {
-                    disposables.add(Completable
-                        .fromRunnable(() -> {
-                          talibDAO.delete(element.id);
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(talibListAdapter::reload)
-                    );
+          new AlertDialog.Builder(this)
+              .setTitle(R.string.dialog_delete_talib)
+              .setMessage(R.string.confirm_delete_talib)
+              .setPositiveButton(R.string.delete_talib, (DialogInterface d, int w) -> {
+                disposables.add(Completable
+                    .fromRunnable(() -> {
+                      talibDAO.delete(element.id);
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(talibListAdapter::reload)
+                );
 
-                  }).show();
+              }).show();
+        });
+    if(element.hifzoServerKey == null) {
+      b.setPositiveButton(R.string.update_talib, (DialogInterface dialog, int which) -> {
+        disposables.add(Completable
+            .fromRunnable(() -> {
+              element.name = talibName.getText().toString();
+              talibDAO.update(element);
             })
-        .show();
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(talibListAdapter::reload)
+        );
+      });
+    }else{
+      talibName.setEnabled(false);
+      b.setPositiveButton(R.string.hifzo_open, (DialogInterface dialog, int which) ->
+      {
+        startActivity(new Intent(Intent.ACTION_VIEW,
+            Uri.parse(element.hifzoUrl)));
+      });
+    }
+
+    b.show();
   }
 }

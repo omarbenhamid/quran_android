@@ -44,12 +44,26 @@ public class HifzoSyncAction implements Action {
       Map<String,String> o = readObject(r);
       String sk = o.get("serverKey");
       if(sk == null) throw new Exception(context.getString(R.string.hifzo_svr_error));
+
+      String name = o.get("talibName");
+      if(name == null) name=sk;
+      String url = o.get("talibUrl");
+      if(url == null) url= "https://hifzo.com/";
+
       Talib t = dao.findByServerKey(sk);
+
       if(t == null) {
-        t = new Talib(o.get("talibName"));
-        t.hifzoUrl = o.get("talibUrl");
-        t.hifzoServerKey = o.get("serverKey");
+        t = new Talib(name);
+        t.hifzoUrl = url;
+        t.hifzoServerKey = sk;
         dao.addTalib(t);
+      }else{
+        if(! name.equals(t.name) ||
+            ! url.equals(t.hifzoUrl)) {
+          t.name = name;
+          t.hifzoUrl = url;
+          dao.update(t);
+        }
       }
     }
     r.endArray();

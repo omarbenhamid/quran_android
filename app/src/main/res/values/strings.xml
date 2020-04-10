@@ -402,4 +402,5 @@
   <string name="sync_now">Sync</string>
   <string name="hifzo_bad_login">Bad login or password</string>
   <string name="hifzo_svr_error">Cannot connect to server</string>
+  <string name="hifzo_open">Open in Hifzo</string>
 </resources>
