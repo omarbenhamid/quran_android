@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -118,23 +119,28 @@ public class QuranSelectTalibActivity extends QuranActionBarActivity {
             final ProgressDialog progress = new ProgressDialog(QuranSelectTalibActivity.this);
             progress.show();
             disposables.add(
-                Completable.fromAction(new HifzoSyncAction(this, talibDAO, login, password))
+                Observable.fromPublisher(new HifzoSyncAction(this, talibDAO, login, password))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(() -> {
-                      progress.dismiss();
-                      settings.setSavedHifzoLogin(login);
-                      if(savePass)
-                        settings.setSavedHifzoPassword(password);
-                      talibListAdapter.reload();
-                      dlg.dismiss();
-                    },(Throwable ex) -> {
-                      progress.dismiss();
-                      ((TextView)dlgView.findViewById(R.id.hifzo_syncerr)).setText(ex.getMessage());
-                      dlgView.findViewById(R.id.hifzo_syncerr).setVisibility(View.VISIBLE);
-                      talibListAdapter.reload();
-                      Log.d(LOG_TAG, "Error connecting to hifzo", ex);
-                    })
+                    .subscribe(
+                        (String msg) -> {
+                          progress.setMessage(msg);
+                        },
+                        (Throwable ex) -> {
+                            progress.dismiss();
+                            ((TextView)dlgView.findViewById(R.id.hifzo_syncerr)).setText(ex.getMessage());
+                            dlgView.findViewById(R.id.hifzo_syncerr).setVisibility(View.VISIBLE);
+                            talibListAdapter.reload();
+                            Log.d(LOG_TAG, "Error connecting to hifzo", ex);
+                        },
+                        () -> {
+                          progress.dismiss();
+                          settings.setSavedHifzoLogin(login);
+                          if(savePass)
+                            settings.setSavedHifzoPassword(password);
+                          talibListAdapter.reload();
+                          dlg.dismiss();
+                        })
             );
 
           }

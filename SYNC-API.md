@@ -1,12 +1,16 @@
 # API For sync
 
-# List talibs
+To sync with a server you need to provide a unique url which supports GET and POST :
+The url is configued in HifzoSyncAction.java
 
-GET : list talibs
+# GET : List talibs
 
-{ "serverKey": "", "talibName":"" }
+{ "serverKey": "unikePK:can be any string",
+  "talibName":"A non empty name for display",
+  "talibUrl":"A browser url to open" }
 
 POST : add reviewRanges to talib
+
 { "serverKey": "",
   "reviewRanges": [
     {

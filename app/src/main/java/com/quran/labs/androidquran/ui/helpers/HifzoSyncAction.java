@@ -7,16 +7,19 @@ import com.quran.labs.androidquran.R;
 import com.quran.labs.androidquran.database.tahfiz.dao.TalibDAO;
 import com.quran.labs.androidquran.database.tahfiz.entities.Talib;
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.reactivex.functions.Action;
 import okhttp3.Credentials;
 
-public class HifzoSyncAction implements Action {
+public class HifzoSyncAction implements Publisher<String> {
+
   //private static final String SYNC_URL="https://hifzo.com/track/api/rangesync";
   private static final String SYNC_URL="http://10.0.2.2:8000/track/api/rangesync";
 
@@ -32,12 +35,28 @@ public class HifzoSyncAction implements Action {
     this.dao = talibDAO;
   }
   @Override
-  public void run() throws Exception {
-    String authHeader = Credentials.basic(login,password);  //Java 8
+  public void subscribe(Subscriber<? super String> progressMonitor) {
+    try {
+      String authHeader = Credentials.basic(login,password);  //Java 8
+      progressMonitor.onNext(context.getString(R.string.hifzo_updating_talibs));
+      downloadTalibList(authHeader);
+      progressMonitor.onComplete();
+    }catch(Throwable ex){
+      progressMonitor.onError(ex);
+    }
+
+  }
+
+  private void downloadTalibList(String authHeader) throws Exception {
+    Thread.sleep(1500);
     HttpURLConnection conn = (HttpURLConnection) new URL(SYNC_URL).openConnection();
     conn.setRequestProperty("Authorization", authHeader);
-    if(conn.getResponseCode() == 401) throw new Exception(context.getString(R.string.hifzo_bad_login));
-    if(conn.getResponseCode() != 200) throw new Exception(context.getString(R.string.hifzo_svr_error));
+    if(conn.getResponseCode() == 401) {
+      throw new Exception(context.getString(R.string.hifzo_bad_login));
+    }
+    if(conn.getResponseCode() != 200) {
+      throw new Exception(context.getString(R.string.hifzo_svr_error));
+    }
     JsonReader r = new JsonReader(new InputStreamReader(conn.getInputStream()));
     r.beginArray();
     while(r.hasNext()) {
@@ -78,4 +97,6 @@ public class HifzoSyncAction implements Action {
     r.endObject();
     return ret;
   }
+
+
 }
