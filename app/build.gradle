@@ -16,7 +16,7 @@ android {
 
   defaultConfig {
     minSdkVersion deps.android.build.minSdkVersion
-    targetSdkVersion deps.android.build.targetSdkVersion
+    targetSdkVersion 29
     versionCode 2951
     versionName "2.9.5-p1"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -34,7 +34,7 @@ android {
   flavorDimensions "pageType"
   productFlavors {
     madani {
-      applicationId "com.quran.labs.androidquran"
+      applicationId "khatamat.androidquran"
     }
   }
 
