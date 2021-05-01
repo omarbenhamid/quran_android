@@ -5,12 +5,12 @@ buildscript {
     androidxMediaVersion = '1.1.0'
     androidxAnnotationVersion = '1.1.0'
     androidxPreferencesVersion = '1.1.0'
-    androidxAppcompatVersion = '1.1.0'
+    androidxAppcompatVersion = '1.2.0'
     androidxRecyclerViewVersion = '1.0.0'
     materialComponentsVersion = '1.0.0'
     espressoVersion = '3.2.0'
     // note - 3.13.x and above require minSdk 21
-    okhttpVersion = '3.12.6'
+    okhttpVersion = '3.12.+'
 
     deps = [
         android: [
